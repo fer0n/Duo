@@ -23,15 +23,12 @@ struct AccessoryCornerView: View {
 
     private var curvedText: String {
         if weeklyDone { return "Done" }
-        if dailyDone {
-            let overshoot = Int((dailyProgressRaw - 1.0) * 100)
-            return "+\(overshoot)%"
-        }
-        let stepsK = String(format: "%.1f", Double(entry.dailyTargetSteps) / 1000)
-        let km = String(format: "%.1f", entry.dailyTargetKm)
-        if entry.dailyTargetSteps == 0 { return km }
-        if entry.dailyTargetKm == 0 { return "\(stepsK)k" }
-        return "\(stepsK)k+\(km)"
+        let stepsK = String(format: "%.1f", Double(entry.todaySteps) / 1000)
+        let km = String(format: "%.0f", entry.todayKm)
+        if entry.todaySteps == 0 && entry.todayKm == 0 { return "0" }
+        if entry.todaySteps == 0 { return km }
+        if entry.todayKm == 0 { return "\(stepsK)k" }
+        return "\(stepsK)k + \(km)"
     }
 
     var body: some View {
