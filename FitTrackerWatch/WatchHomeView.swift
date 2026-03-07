@@ -3,16 +3,25 @@ import SwiftUI
 struct WatchHomeView: View {
     @Environment(ChallengeStore.self) private var store
 
-    private var dailyTarget: (steps: Int, km: Double) {
-        ProgressCalculator.dailyTarget(
-            weeklyProgress: store.weeklyProgress,
-            remainingDays: store.remainingDays
-        )
+    private var remainingFraction: Double { max(0, 1 - store.weeklyProgress) }
+    private var remainingSteps: Int { Int((remainingFraction * ProgressCalculator.stepGoal).rounded()) }
+    private var remainingKm: Double { remainingFraction * ProgressCalculator.kmGoal }
+
+    private var remainingText: String {
+        if store.weeklyProgress >= 1.0 { return "Weekly goal complete!" }
+        let stepsK = Int((Double(remainingSteps) / 1000).rounded())
+        let km = Int(remainingKm.rounded())
+        return "\(stepsK)k steps or \(km)km left"
+    }
+
+    private var daysText: String {
+        guard store.weeklyProgress < 1.0 else { return "" }
+        return store.remainingDays == 1 ? "for the remaining day" : "for \(store.remainingDays) days"
     }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 10) {
+            VStack(spacing: 5) {
                 Gauge(value: store.weeklyProgress, in: 0...1) {
                     Image(systemName: "figure.run")
                         .font(.caption2)
@@ -22,23 +31,19 @@ struct WatchHomeView: View {
                         .monospacedDigit()
                 }
                 .gaugeStyle(.accessoryCircularCapacity)
-                .tint(
-                    store.weeklyProgress >= 1.0 ? .green : .blue
-                )
-                .scaleEffect(1.3)
+                .tint(store.weeklyProgress >= 1.0 ? .green : .blue)
                 .padding(.top, 4)
 
-                Text(ProgressCalculator.dailyTargetText(
-                    steps: dailyTarget.steps,
-                    km: dailyTarget.km
-                ))
-                .font(.caption2)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.primary)
-
-                Text("\(store.remainingDays)d left")
+                Text(remainingText)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.primary)
+
+                if !daysText.isEmpty {
+                    Text(daysText)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
 
                 NavigationLink("Log Activity") {
                     WatchDataEntryView()
