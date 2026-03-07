@@ -33,6 +33,8 @@ struct AccessoryCircularView: View {
         dailyTargetSteps: 5800,
         dailyTargetKm: 3.9,
         weeklySteps: 24000,
-        weeklyKm: 10.0
+        weeklyKm: 10.0,
+        todaySteps: 3000,
+        todayKm: 2.0
     )
 }

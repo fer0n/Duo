@@ -2,18 +2,33 @@ import SwiftUI
 import WidgetKit
 
 /// Corner complication for Nike Hybrid face.
-/// Curved text always shows today's daily target (remaining ÷ remaining days).
-/// Before goal: ProgressView toward goal. After goal: Gauge showing how far past goal.
+/// Progress bar always shows today's progress toward the daily goal.
+/// Curved text: "Done" (weekly done), "+X%" overshoot (daily done), or the daily target.
 struct AccessoryCornerView: View {
     let entry: FitChallengeEntry
 
-    private var goalReached: Bool { entry.weeklyProgress >= 1.0 }
+    private var weeklyDone: Bool { entry.weeklyProgress >= 1.0 }
 
-    // Always shows daily target (remaining weekly goal ÷ remaining days).
+    /// Ratio of today's activity to the daily goal (1.0 = exactly met, >1.0 = overshot).
+    private var dailyProgressRaw: Double {
+        let goalUnits = Double(entry.dailyTargetSteps) / ProgressCalculator.stepGoal
+            + entry.dailyTargetKm / ProgressCalculator.kmGoal
+        guard goalUnits > 0 else { return 0 }
+        let todayUnits = Double(entry.todaySteps) / ProgressCalculator.stepGoal
+            + entry.todayKm / ProgressCalculator.kmGoal
+        return todayUnits / goalUnits
+    }
+
+    private var dailyDone: Bool { dailyProgressRaw >= 1.0 }
+
     private var curvedText: String {
+        if weeklyDone { return "Done" }
+        if dailyDone {
+            let overshoot = Int((dailyProgressRaw - 1.0) * 100)
+            return "+\(overshoot)%"
+        }
         let stepsK = String(format: "%.1f", Double(entry.dailyTargetSteps) / 1000)
         let km = String(format: "%.1f", entry.dailyTargetKm)
-        if entry.dailyTargetSteps == 0 && entry.dailyTargetKm == 0 { return "Done" }
         if entry.dailyTargetSteps == 0 { return km }
         if entry.dailyTargetKm == 0 { return "\(stepsK)k" }
         return "\(stepsK)k+\(km)"
@@ -25,23 +40,23 @@ struct AccessoryCornerView: View {
             .minimumScaleFactor(0.7)
             .widgetCurvesContent()
             .widgetLabel {
-                if goalReached {
-                    // Gauge range extends beyond goal so you can see where 1.0 was
-                    let gaugeMax = max(entry.weeklyProgressRaw, 1)
-                    let goalMark = 1.0 / gaugeMax
-                    Gauge(value: entry.weeklyProgressRaw, in: 0...gaugeMax) {
+                if weeklyDone {
+                    // value = goal (1.0), max = how far past goal — bar fills to where goal sits
+                    Gauge(value: 1.0, in: 0...max(entry.weeklyProgressRaw, 1)) {
                         Text("")
                     } currentValueLabel: {
                         Text("")
                     }
-                    .tint(Gradient(stops: [
-                        .init(color: .green, location: 0),
-                        .init(color: .green, location: goalMark),
-                        .init(color: .green.opacity(0.45), location: goalMark + 0.01),
-                        .init(color: .green.opacity(0.45), location: 1.0)
-                    ]))
+                    .tint(.green)
+                } else if dailyDone {
+                    Gauge(value: 1.0, in: 0...dailyProgressRaw) {
+                        Text("")
+                    } currentValueLabel: {
+                        Text("")
+                    }
+                    .tint(.blue)
                 } else {
-                    ProgressView(value: entry.weeklyProgress) {
+                    ProgressView(value: dailyProgressRaw) {
                         Text("")
                     } currentValueLabel: {
                         Text("")
@@ -56,6 +71,7 @@ struct AccessoryCornerView: View {
 #Preview(as: .accessoryCorner) {
     FitChallengeCornerWidget()
 } timeline: {
+    // 65% weekly done, today ~50% through daily target
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.65,
@@ -66,9 +82,11 @@ struct AccessoryCornerView: View {
         dailyTargetSteps: 5800,
         dailyTargetKm: 3.9,
         weeklySteps: 24000,
-        weeklyKm: 10.0
+        weeklyKm: 10.0,
+        todaySteps: 2900,
+        todayKm: 1.95
     )
-    // Daily pacing overshot by ~50% (ahead of schedule), weekly goal not yet reached
+    // 78% weekly done, daily goal overshot by 50% (todayUnits = 1.5 × dailyGoalUnits)
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.78,
@@ -79,8 +97,11 @@ struct AccessoryCornerView: View {
         dailyTargetSteps: 3300,
         dailyTargetKm: 2.2,
         weeklySteps: 28800,
-        weeklyKm: 12.0
+        weeklyKm: 12.0,
+        todaySteps: 4950,
+        todayKm: 3.3
     )
+    // Weekly goal done
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 1.0,
@@ -91,6 +112,8 @@ struct AccessoryCornerView: View {
         dailyTargetSteps: 0,
         dailyTargetKm: 0.0,
         weeklySteps: 62000,
-        weeklyKm: 14.7
+        weeklyKm: 14.7,
+        todaySteps: 0,
+        todayKm: 0.0
     )
 }

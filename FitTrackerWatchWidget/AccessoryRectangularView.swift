@@ -82,7 +82,9 @@ struct ComplicationProgressBar: View {
         dailyTargetSteps: 5800,
         dailyTargetKm: 3.9,
         weeklySteps: 24000,
-        weeklyKm: 10.0
+        weeklyKm: 10.0,
+        todaySteps: 3000,
+        todayKm: 2.0
     )
     FitChallengeEntry(
         date: .now,
@@ -94,6 +96,8 @@ struct ComplicationProgressBar: View {
         dailyTargetSteps: 8600,
         dailyTargetKm: 5.7,
         weeklySteps: 0,
-        weeklyKm: 0.0
+        weeklyKm: 0.0,
+        todaySteps: 0,
+        todayKm: 0.0
     )
 }

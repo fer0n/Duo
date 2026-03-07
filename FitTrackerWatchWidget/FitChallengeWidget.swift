@@ -14,6 +14,8 @@ struct FitChallengeEntry: TimelineEntry {
     let dailyTargetKm: Double
     let weeklySteps: Int
     let weeklyKm: Double
+    let todaySteps: Int
+    let todayKm: Double
 }
 
 // MARK: - Nonisolated data reader for widget (avoids @MainActor ChallengeStore)
@@ -22,6 +24,8 @@ private struct WidgetDataReader {
     let settings: ChallengeSettings
     let weeklySteps: Int
     let weeklyKm: Double
+    let todaySteps: Int
+    let todayKm: Double
 
     init() {
         let defaults = UserDefaults(suiteName: "group.com.pentlandFirth.FitTracker") ?? .standard
@@ -37,9 +41,14 @@ private struct WidgetDataReader {
             let weekEntries = entries.values.filter { $0.date >= weekStart }
             weeklySteps = weekEntries.reduce(0) { $0 + $1.steps }
             weeklyKm = weekEntries.reduce(0.0) { $0 + $1.cyclingKm }
+            let todayEntry = entries[Date.todayKey()]
+            todaySteps = todayEntry?.steps ?? 0
+            todayKm = todayEntry?.cyclingKm ?? 0.0
         } else {
             weeklySteps = 0
             weeklyKm = 0
+            todaySteps = 0
+            todayKm = 0.0
         }
     }
 }
@@ -67,7 +76,9 @@ struct FitChallengeProvider: TimelineProvider {
             dailyTargetSteps: target.steps,
             dailyTargetKm: target.km,
             weeklySteps: reader.weeklySteps,
-            weeklyKm: reader.weeklyKm
+            weeklyKm: reader.weeklyKm,
+            todaySteps: reader.todaySteps,
+            todayKm: reader.todayKm
         )
     }
 
@@ -82,7 +93,9 @@ struct FitChallengeProvider: TimelineProvider {
             dailyTargetSteps: 8500,
             dailyTargetKm: 4.0,
             weeklySteps: 18000,
-            weeklyKm: 8.0
+            weeklyKm: 8.0,
+            todaySteps: 3400,
+            todayKm: 1.6
         )
     }
 
