@@ -98,6 +98,53 @@ final class HealthKitManager {
         }
     }
 
+    // MARK: - Hourly Data
+
+    func fetchTodayHourlyData() async -> [(hour: Int, steps: Int, km: Double)] {
+        guard Self.isAvailable else { return [] }
+        let today = Calendar.current.startOfDay(for: .now)
+
+        async let stepsMap = fetchHourlyTotals(
+            type: HKQuantityType(.stepCount), unit: .count(), from: today
+        )
+        async let kmMap = fetchHourlyTotals(
+            type: HKQuantityType(.distanceCycling), unit: HKUnit(from: "km"), from: today
+        )
+
+        let (steps, km) = await (stepsMap, kmMap)
+        return (0..<24).map { hour in
+            (hour: hour, steps: Int(steps[hour] ?? 0), km: km[hour] ?? 0.0)
+        }
+    }
+
+    private func fetchHourlyTotals(
+        type: HKQuantityType, unit: HKUnit, from dayStart: Date
+    ) async -> [Int: Double] {
+        await withCheckedContinuation { continuation in
+            let predicate = HKQuery.predicateForSamples(
+                withStart: dayStart, end: .now, options: .strictStartDate
+            )
+            let query = HKStatisticsCollectionQuery(
+                quantityType: type,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum,
+                anchorDate: dayStart,
+                intervalComponents: DateComponents(hour: 1)
+            )
+            query.initialResultsHandler = { _, collection, _ in
+                var result: [Int: Double] = [:]
+                collection?.enumerateStatistics(from: dayStart, to: .now) { stats, _ in
+                    let hour = Calendar.current.component(.hour, from: stats.startDate)
+                    if let sum = stats.sumQuantity() {
+                        result[hour] = sum.doubleValue(for: unit)
+                    }
+                }
+                continuation.resume(returning: result)
+            }
+            healthStore.execute(query)
+        }
+    }
+
     // MARK: - Helpers
 
     static func dateKey(_ date: Date) -> String {

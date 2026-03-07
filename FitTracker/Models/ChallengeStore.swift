@@ -2,6 +2,16 @@ import Foundation
 import Observation
 import WidgetKit
 
+struct HourlyActivity: Identifiable {
+    let hour: Int
+    let steps: Int
+    let km: Double
+    var id: Int { hour }
+    var units: Double {
+        Double(steps) / ProgressCalculator.stepGoal + km / ProgressCalculator.kmGoal
+    }
+}
+
 @Observable
 @MainActor
 final class ChallengeStore {
@@ -14,6 +24,7 @@ final class ChallengeStore {
 
     var entries: [String: DailyEntry] = [:]
     var settings = ChallengeSettings()
+    var hourlyActivity: [HourlyActivity] = []
 
     init() {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
@@ -36,7 +47,10 @@ final class ChallengeStore {
 
     func refreshFromHealthKit() async {
         let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
-        entries = await healthKit.fetchWeeklyEntries(from: weekStart)
+        async let weeklyData = healthKit.fetchWeeklyEntries(from: weekStart)
+        async let hourlyData = healthKit.fetchTodayHourlyData()
+        entries = await weeklyData
+        hourlyActivity = (await hourlyData).map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
         writeEntriesToDefaults()
         WidgetCenter.shared.reloadAllTimelines()
     }
