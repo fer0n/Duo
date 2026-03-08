@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		884E38852F5C8A4700404F42 /* FitTrackerWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 884E38652F5C8A4500404F42 /* FitTrackerWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		884E38C42F5C8E9E00404F42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884E38C32F5C8E9E00404F42 /* WidgetKit.framework */; };
+		884E38C62F5C8E9E00404F42 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884E38C52F5C8E9E00404F42 /* SwiftUI.framework */; };
+		884E38D52F5C8E9F00404F42 /* FitTrackerWatchWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 884E38C12F5C8E9E00404F42 /* FitTrackerWatchWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		884E38EF2F5C8F5A00404F42 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884E38ED2F5C8F5700404F42 /* WidgetKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -17,6 +21,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 884E38642F5C8A4500404F42;
 			remoteInfo = "FitTrackerWatchOS Watch App";
+		};
+		884E38D32F5C8E9F00404F42 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 88EBB53B2F5C863100A25A70 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 884E38C02F5C8E9E00404F42;
+			remoteInfo = FitTrackerWatchWidgetExtensionExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -32,12 +43,70 @@
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		884E38DA2F5C8E9F00404F42 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				884E38D52F5C8E9F00404F42 /* FitTrackerWatchWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		884E38F12F5C8F5B00404F42 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		884E38652F5C8A4500404F42 /* FitTrackerWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitTrackerWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		884E38C12F5C8E9E00404F42 /* FitTrackerWatchWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FitTrackerWatchWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		884E38C32F5C8E9E00404F42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		884E38C52F5C8E9E00404F42 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		884E38E22F5C8EC000404F42 /* FitTrackerWatchWidgetExtensionExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitTrackerWatchWidgetExtensionExtension.entitlements; sourceTree = "<group>"; };
+		884E38ED2F5C8F5700404F42 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
 		88EBB5432F5C863100A25A70 /* FitTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		884E38D62F5C8E9F00404F42 /* Exceptions for "FitTrackerWatchWidget" folder in "FitTrackerWatchWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
+		};
+		884E38EB2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatch" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/ChallengeStore.swift,
+				"Shared/Extensions/Date+Challenge.swift",
+				Shared/Models/ChallengeSettings.swift,
+				Shared/Models/DailyEntry.swift,
+				Shared/Models/ProgressCalculator.swift,
+			);
+			target = 884E38642F5C8A4500404F42 /* FitTrackerWatch */;
+		};
+		884E38EC2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatchWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/ChallengeStore.swift,
+				"Shared/Extensions/Date+Challenge.swift",
+				Shared/Models/ChallengeSettings.swift,
+				Shared/Models/DailyEntry.swift,
+				Shared/Models/ProgressCalculator.swift,
+			);
+			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		884E38662F5C8A4500404F42 /* FitTrackerWatch */ = {
@@ -45,8 +114,20 @@
 			path = FitTrackerWatch;
 			sourceTree = "<group>";
 		};
+		884E38C72F5C8E9E00404F42 /* FitTrackerWatchWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				884E38D62F5C8E9F00404F42 /* Exceptions for "FitTrackerWatchWidget" folder in "FitTrackerWatchWidget" target */,
+			);
+			path = FitTrackerWatchWidget;
+			sourceTree = "<group>";
+		};
 		88EBB5452F5C863100A25A70 /* FitTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				884E38EB2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatch" target */,
+				884E38EC2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatchWidget" target */,
+			);
 			path = FitTracker;
 			sourceTree = "<group>";
 		};
@@ -60,21 +141,44 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		884E38BE2F5C8E9E00404F42 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				884E38C62F5C8E9E00404F42 /* SwiftUI.framework in Frameworks */,
+				884E38C42F5C8E9E00404F42 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		88EBB5402F5C863100A25A70 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				884E38EF2F5C8F5A00404F42 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		884E38C22F5C8E9E00404F42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				884E38C32F5C8E9E00404F42 /* WidgetKit.framework */,
+				884E38ED2F5C8F5700404F42 /* WidgetKit.framework */,
+				884E38C52F5C8E9E00404F42 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		88EBB53A2F5C863100A25A70 = {
 			isa = PBXGroup;
 			children = (
+				884E38E22F5C8EC000404F42 /* FitTrackerWatchWidgetExtensionExtension.entitlements */,
 				88EBB5452F5C863100A25A70 /* FitTracker */,
 				884E38662F5C8A4500404F42 /* FitTrackerWatch */,
+				884E38C72F5C8E9E00404F42 /* FitTrackerWatchWidget */,
+				884E38C22F5C8E9E00404F42 /* Frameworks */,
 				88EBB5442F5C863100A25A70 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,6 +188,7 @@
 			children = (
 				88EBB5432F5C863100A25A70 /* FitTracker.app */,
 				884E38652F5C8A4500404F42 /* FitTrackerWatch.app */,
+				884E38C12F5C8E9E00404F42 /* FitTrackerWatchWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,10 +203,12 @@
 				884E38612F5C8A4500404F42 /* Sources */,
 				884E38622F5C8A4500404F42 /* Frameworks */,
 				884E38632F5C8A4500404F42 /* Resources */,
+				884E38DA2F5C8E9F00404F42 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				884E38D42F5C8E9F00404F42 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				884E38662F5C8A4500404F42 /* FitTrackerWatch */,
@@ -113,6 +220,28 @@
 			productReference = 884E38652F5C8A4500404F42 /* FitTrackerWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
+		884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 884E38D72F5C8E9F00404F42 /* Build configuration list for PBXNativeTarget "FitTrackerWatchWidget" */;
+			buildPhases = (
+				884E38BD2F5C8E9E00404F42 /* Sources */,
+				884E38BE2F5C8E9E00404F42 /* Frameworks */,
+				884E38BF2F5C8E9E00404F42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				884E38C72F5C8E9E00404F42 /* FitTrackerWatchWidget */,
+			);
+			name = FitTrackerWatchWidget;
+			packageProductDependencies = (
+			);
+			productName = FitTrackerWatchWidgetExtensionExtension;
+			productReference = 884E38C12F5C8E9E00404F42 /* FitTrackerWatchWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		88EBB5422F5C863100A25A70 /* FitTracker */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 88EBB5662F5C863400A25A70 /* Build configuration list for PBXNativeTarget "FitTracker" */;
@@ -122,6 +251,7 @@
 				88EBB5412F5C863100A25A70 /* Resources */,
 				88EBB56F2F5C863400A25A70 /* ShellScript */,
 				884E38892F5C8A4700404F42 /* Embed Watch Content */,
+				884E38F12F5C8F5B00404F42 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -151,6 +281,9 @@
 					884E38642F5C8A4500404F42 = {
 						CreatedOnToolsVersion = 26.3;
 					};
+					884E38C02F5C8E9E00404F42 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					88EBB5422F5C863100A25A70 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -172,12 +305,20 @@
 			targets = (
 				88EBB5422F5C863100A25A70 /* FitTracker */,
 				884E38642F5C8A4500404F42 /* FitTrackerWatch */,
+				884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		884E38632F5C8A4500404F42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		884E38BF2F5C8E9E00404F42 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -222,6 +363,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		884E38BD2F5C8E9E00404F42 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		88EBB53F2F5C863100A25A70 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -237,6 +385,11 @@
 			target = 884E38642F5C8A4500404F42 /* FitTrackerWatch */;
 			targetProxy = 884E38832F5C8A4700404F42 /* PBXContainerItemProxy */;
 		};
+		884E38D42F5C8E9F00404F42 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
+			targetProxy = 884E38D32F5C8E9F00404F42 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -245,6 +398,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FitTrackerWatch/FitTrackerWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HU6B6E9383;
@@ -278,6 +432,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FitTrackerWatch/FitTrackerWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HU6B6E9383;
@@ -298,6 +453,75 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		884E38D82F5C8E9F00404F42 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FitTrackerWatchWidgetExtensionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HU6B6E9383;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitTrackerWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FitTrackerWatchWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pentlandFirth.FitTracker.watchkitapp.FitTrackerWatchWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		884E38D92F5C8E9F00404F42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FitTrackerWatchWidgetExtensionExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HU6B6E9383;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitTrackerWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FitTrackerWatchWidgetExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pentlandFirth.FitTracker.watchkitapp.FitTrackerWatchWidgetExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -428,6 +652,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FitTracker/FitTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HU6B6E9383;
@@ -474,6 +699,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FitTracker/FitTracker.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HU6B6E9383;
@@ -523,6 +749,15 @@
 			buildConfigurations = (
 				884E38872F5C8A4700404F42 /* Debug */,
 				884E38882F5C8A4700404F42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		884E38D72F5C8E9F00404F42 /* Build configuration list for PBXNativeTarget "FitTrackerWatchWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				884E38D82F5C8E9F00404F42 /* Debug */,
+				884E38D92F5C8E9F00404F42 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

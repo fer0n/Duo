@@ -6,10 +6,15 @@
 import SwiftUI
 
 @main
-struct FitTrackerWatchOS_Watch_AppApp: App {
+struct FitTrackerWatchApp: App {
+    @State private var store = ChallengeStore()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                WatchHomeView()
+            }
+            .environment(store)
         }
     }
 }
