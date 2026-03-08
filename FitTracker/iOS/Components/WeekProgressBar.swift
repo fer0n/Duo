@@ -15,7 +15,7 @@ struct WeekProgressBar: View {
 
                 if stepsContrib > 0 {
                     Capsule()
-                        .fill(Color.blue)
+                        .fill(Color.accentColor)
                         .frame(width: width * stepsContrib, height: 16)
                 }
 

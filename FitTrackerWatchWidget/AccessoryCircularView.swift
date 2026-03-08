@@ -15,7 +15,7 @@ struct AccessoryCircularView: View {
                 .monospacedDigit()
         }
         .gaugeStyle(.accessoryCircularCapacity)
-        .tint(entry.weeklyProgress >= 1.0 ? .green : .blue)
+        .tint(entry.weeklyProgress >= 1.0 ? .green : .accentColor)
         .widgetURL(URL(string: "fittracker://open"))
     }
 }

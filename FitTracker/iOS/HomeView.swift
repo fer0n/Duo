@@ -36,7 +36,7 @@ struct HomeView: View {
             Circle()
                 .trim(from: 0, to: store.weeklyProgress)
                 .stroke(
-                    AngularGradient(colors: [.blue, .teal], center: .center),
+                    AngularGradient(colors: [.accentColor, .teal], center: .center),
                     style: StrokeStyle(lineWidth: 16, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))
@@ -72,7 +72,7 @@ struct HomeView: View {
 
             HStack(spacing: 16) {
                 Label("Steps", systemImage: "circle.fill")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
                     .font(.caption)
                 Label("Cycling", systemImage: "circle.fill")
                     .foregroundStyle(.green)

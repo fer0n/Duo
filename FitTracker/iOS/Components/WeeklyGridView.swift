@@ -22,7 +22,7 @@ struct WeeklyGridView: View {
     private func color(for entry: DailyEntry?) -> Color {
         guard let entry, entry.steps > 0 || entry.cyclingKm > 0 else { return Color(.systemGray5) }
         if entry.steps > 0 && entry.cyclingKm > 0 { return .teal }
-        if entry.steps > 0 { return .blue }
+        if entry.steps > 0 { return .accentColor }
         return .green
     }
 

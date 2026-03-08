@@ -53,7 +53,7 @@ struct ComplicationProgressBar: View {
 
                 if stepsContrib > 0 {
                     Capsule()
-                        .fill(Color.blue)
+                        .fill(Color.accentColor)
                         .frame(width: width * min(stepsContrib, 1.0), height: 8)
                 }
 

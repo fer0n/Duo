@@ -23,11 +23,11 @@ struct AccessoryCornerView: View {
 
     private var curvedText: String {
         if weeklyDone { return "Done" }
-        let stepsK = String(format: "%.1f", Double(entry.todaySteps) / 1000)
-        let km = String(format: "%.0f", entry.todayKm)
         if entry.todaySteps == 0 && entry.todayKm == 0 { return "0" }
-        if entry.todaySteps == 0 { return km }
-        if entry.todayKm == 0 { return "\(stepsK)k" }
+        let km = String(format: "%.0f", entry.todayKm)
+        if entry.todaySteps == 0 { return String(format: "%.1f km", entry.todayKm) }
+        if entry.todayKm == 0 { return entry.todaySteps.formatted() }
+        let stepsK = String(format: "%.1f", Double(entry.todaySteps) / 1000)
         return "\(stepsK)k + \(km)"
     }
 
@@ -51,14 +51,14 @@ struct AccessoryCornerView: View {
                     } currentValueLabel: {
                         Text("")
                     }
-                    .tint(.blue)
+                    .tint(.accentColor)
                 } else {
                     ProgressView(value: dailyProgressRaw) {
                         Text("")
                     } currentValueLabel: {
                         Text("")
                     }
-                    .tint(.blue)
+                    .tint(.accentColor)
                 }
             }
             .widgetURL(URL(string: "fittracker://open"))
