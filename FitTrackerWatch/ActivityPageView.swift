@@ -17,7 +17,7 @@ struct ActivityPageView: View {
     let config: ActivityPageConfig
 
     var body: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 10) {
             ArcProgressBar(stepsFraction: config.stepsFraction, kmFraction: config.kmFraction, kmColor: bikeColor) {
                 HStack {
                     Text(config.label)
@@ -47,6 +47,6 @@ struct ActivityPageView: View {
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(10)
+        .padding()
     }
 }

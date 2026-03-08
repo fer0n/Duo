@@ -28,7 +28,7 @@ struct ArcProgressBar<Label: View>: View {
     private var scaledSteps: Double { rawSteps / scale }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 2) {
             label
 
             ZStack(alignment: .leading) {
@@ -37,11 +37,12 @@ struct ArcProgressBar<Label: View>: View {
 
                 ProgressCapsule(fraction: scaledTotal)
                     .fill(kmColor)
+                    .shadow(color: .black.opacity(0.4), radius: 3)
 
                 ProgressCapsule(fraction: scaledSteps)
                     .fill(Color.accentColor)
                     .clipShape(Capsule())
-                    .shadow(color: .black.opacity(0.3), radius: 3)
+                    .shadow(color: .black.opacity(0.4), radius: 3)
             }
             .animation(.smooth, value: scaledTotal)
             .animation(.smooth, value: scaledSteps)

@@ -41,11 +41,12 @@ struct SingleArcGauge: View {
 
             ZStack {
                 Circle()
-                    .stroke(Color.secondary.opacity(0.3), lineWidth: lineWidth)
+                    .stroke(Color.secondary.opacity(0.4), lineWidth: lineWidth)
 
                 ArcShape(fraction: secondaryFraction)
                     .stroke(Color.accentColor.opacity(0.3),
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    .shadow(color: .black, radius: 1)
 
                 ArcShape(fraction: fraction)
                     .stroke(Color.accentColor,
