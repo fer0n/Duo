@@ -25,6 +25,8 @@ struct WatchHomeView: View {
         store.weeklyKm / ProgressCalculator.kmGoal
     }
 
+    @State private var isRefreshing = false
+
     var body: some View {
         NavigationStack {
             TabView {
@@ -56,11 +58,22 @@ struct WatchHomeView: View {
                 ))
 
                 // Page 4: Refresh
-                Button("Refresh") {
-                    Task { await store.refreshFromHealthKit() }
+                Button {
+                    Task {
+                        isRefreshing = true
+                        await store.refreshFromHealthKit()
+                        isRefreshing = false
+                    }
+                } label: {
+                    if isRefreshing {
+                        ProgressView()
+                    } else {
+                        Text("Refresh")
+                    }
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
+                .disabled(isRefreshing)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .tabViewStyle(.verticalPage)
