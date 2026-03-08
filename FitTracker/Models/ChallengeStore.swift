@@ -26,10 +26,12 @@ final class ChallengeStore {
     var settings = ChallengeSettings()
     var hourlyActivity: [HourlyActivity] = []
 
-    init() {
+    init(skipHealthKit: Bool = false) {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
         loadFromDefaults()
-        Task { await setupHealthKit() }
+        if !skipHealthKit {
+            Task { await setupHealthKit() }
+        }
     }
 
     // MARK: - HealthKit
