@@ -1,13 +1,10 @@
-//
-//  FitTrackerWatchOSApp.swift
-//  FitTrackerWatchOS Watch App
-//
-
 import SwiftUI
+import WatchKit
 
 @main
 struct FitTrackerWatchApp: App {
     @State private var store = ChallengeStore()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -15,6 +12,23 @@ struct FitTrackerWatchApp: App {
                 WatchHomeView()
             }
             .environment(store)
+            .onChange(of: scenePhase) { _, phase in
+                guard phase == .active else { return }
+                Task { await store.refreshFromHealthKit() }
+                scheduleBackgroundRefresh()
+            }
         }
+        .backgroundTask(.appRefresh("refresh")) {
+            await store.refreshFromHealthKit()
+            scheduleBackgroundRefresh()
+        }
+    }
+
+    private nonisolated func scheduleBackgroundRefresh() {
+        WKApplication.shared().scheduleBackgroundRefresh(
+            withPreferredDate: Date(timeIntervalSinceNow: 15 * 60),
+            userInfo: nil,
+            scheduledCompletion: { _ in }
+        )
     }
 }

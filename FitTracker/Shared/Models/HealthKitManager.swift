@@ -87,12 +87,12 @@ final class HealthKitManager {
         ) { _, _ in }
     }
 
-    func startObserving(onChange: @escaping @Sendable () -> Void) {
+    func startObserving(onChange: @escaping @Sendable (@escaping () -> Void) -> Void) {
         guard Self.isAvailable else { return }
         for type in [HKQuantityType(.stepCount), HKQuantityType(.distanceCycling)] {
-            let query = HKObserverQuery(sampleType: type, predicate: nil) { _, _, error in
+            let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completionHandler, error in
                 guard error == nil else { return }
-                onChange()
+                onChange(completionHandler)
             }
             healthStore.execute(query)
         }

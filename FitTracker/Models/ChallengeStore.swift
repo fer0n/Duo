@@ -39,9 +39,10 @@ final class ChallengeStore {
     private func setupHealthKit() async {
         try? await healthKit.requestAuthorization()
         healthKit.enableBackgroundDelivery()
-        healthKit.startObserving { [weak self] in
+        healthKit.startObserving { [weak self] completionHandler in
             Task { @MainActor [weak self] in
                 await self?.refreshFromHealthKit()
+                completionHandler()
             }
         }
         await refreshFromHealthKit()
