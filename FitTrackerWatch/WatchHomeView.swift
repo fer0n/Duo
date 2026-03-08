@@ -43,7 +43,9 @@ struct WatchHomeView: View {
                 ))
 
                 // Page 2: Hourly chart
-                WatchHourlyView(hourlyActivity: store.hourlyActivity)
+                HourlyChartView(hourlyActivity: store.hourlyActivity)
+                    .padding(.horizontal, 20)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .navigationTitle("Hourly")
 
                 // Page 3: This week

@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-struct WatchHourlyView: View {
+struct HourlyChartView: View {
     let hourlyActivity: [HourlyActivity]
 
     private var maxUnits: Double { hourlyActivity.map(\.units).max() ?? 0 }
@@ -27,14 +27,13 @@ struct WatchHourlyView: View {
                 AxisValueLabel {
                     if let hour = value.as(Int.self) {
                         Text("\(hour)")
-                            .font(.system(size: 7))
+                            .font(.system(size: 10))
                     }
                 }
             }
         }
         .chartYAxis(.hidden)
         .chartYScale(domain: 0...(maxUnits > 0 ? maxUnits * 1.2 : 0.01))
-        .padding(.horizontal, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
