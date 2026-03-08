@@ -21,9 +21,11 @@ struct ArcProgressBar<Label: View>: View {
     var kmColor: Color = .accentColor
     @ViewBuilder let label: Label
 
-    private var clampedSteps: Double { min(max(stepsFraction, 0), 1) }
-    private var clampedKm: Double { min(max(kmFraction, 0), 1) }
-    private var clampedTotal: Double { min(clampedSteps + clampedKm, 1) }
+    private var rawSteps: Double { max(stepsFraction, 0) }
+    private var rawTotal: Double { max(stepsFraction + kmFraction, 0) }
+    private var scale: Double { max(1.0, rawTotal) }
+    private var scaledTotal: Double { rawTotal / scale }
+    private var scaledSteps: Double { rawSteps / scale }
 
     var body: some View {
         VStack(spacing: 4) {
@@ -33,16 +35,16 @@ struct ArcProgressBar<Label: View>: View {
                 Capsule()
                     .fill(Color.secondary.opacity(0.3))
 
-                ProgressCapsule(fraction: clampedTotal)
+                ProgressCapsule(fraction: scaledTotal)
                     .fill(kmColor)
 
-                ProgressCapsule(fraction: clampedSteps)
+                ProgressCapsule(fraction: scaledSteps)
                     .fill(Color.accentColor)
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.3), radius: 3)
             }
-            .animation(.smooth, value: clampedTotal)
-            .animation(.smooth, value: clampedSteps)
+            .animation(.smooth, value: scaledTotal)
+            .animation(.smooth, value: scaledSteps)
             .frame(height: 20)
         }
         .font(.footnote)
