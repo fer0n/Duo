@@ -1,6 +1,37 @@
 import SwiftUI
 import Charts
 
+// MARK: - ArcShape
+
+private struct ArcShape: Shape {
+    var fraction: Double    // unbounded; >1.0 draws overlapping laps
+
+    var animatableData: Double {
+        get { fraction }
+        set { fraction = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        guard fraction > 0 else { return Path() }
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2
+        var path = Path()
+        let fullLaps = Int(fraction)
+        let remainder = fraction - Double(fullLaps)
+        for _ in 0..<fullLaps {
+            path.addArc(center: center, radius: radius,
+                        startAngle: .degrees(-90), endAngle: .degrees(270), clockwise: false)
+        }
+        if remainder > 0 {
+            path.addArc(center: center, radius: radius,
+                        startAngle: .degrees(-90),
+                        endAngle: .degrees(-90 + 360 * remainder),
+                        clockwise: false)
+        }
+        return path
+    }
+}
+
 // MARK: - SingleArcGauge
 
 struct SingleArcGauge: View {
@@ -13,60 +44,22 @@ struct SingleArcGauge: View {
             let lineWidth = max(size * 0.14, 4)
 
             ZStack {
-                // Background track
                 Circle()
                     .stroke(Color.secondary.opacity(0.3), lineWidth: lineWidth)
 
-                // Progress arc
-                ForEach(arcSegments(from: 0, to: fraction)) { seg in
-                    Circle()
-                        .trim(from: seg.start, to: seg.end)
-                        .stroke(
-                            Color.accentColor,
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(-90))
-                }
+                ArcShape(fraction: fraction)
+                    .stroke(Color.accentColor,
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
 
-                // Center icon
                 Image(systemName: systemImage)
                     .font(.system(size: size * 0.36, weight: .black))
-
             }
             .padding(lineWidth / 2)
             .frame(width: size, height: size)
             .frame(width: geo.size.width, height: geo.size.height)
         }
+        .animation(.smooth, value: fraction)
         .aspectRatio(1, contentMode: .fit)
-    }
-
-    private struct ArcSegment: Identifiable {
-        let id: Int
-        let start: CGFloat  // 0...1 trim range
-        let end: CGFloat
-        let lap: Int
-    }
-
-    /// Splits a fraction range into per-lap segments with trim values in [0, 1].
-    private func arcSegments(from startFrac: Double, to endFrac: Double) -> [ArcSegment] {
-        guard endFrac > startFrac else { return [] }
-        var segments: [ArcSegment] = []
-        var current = startFrac
-        var lap = Int(startFrac)
-        var idx = 0
-        while current < endFrac {
-            let lapEnd = Double(lap + 1)
-            let segEnd = min(endFrac, lapEnd)
-            let trimStart = current - Double(lap)
-            let trimEnd = segEnd - Double(lap)
-            if trimEnd > trimStart {
-                segments.append(ArcSegment(id: idx, start: CGFloat(trimStart), end: CGFloat(trimEnd), lap: lap))
-                idx += 1
-            }
-            current = segEnd
-            lap += 1
-        }
-        return segments
     }
 }
 
@@ -91,6 +84,7 @@ struct ActivityRow: View {
                     .minimumScaleFactor(0.01)
                     .lineLimit(1)
                     .padding(.vertical, -7)
+                    .contentTransition(.numericText())
 
                 Text(goal)
                     .font(.footnote).monospacedDigit()
@@ -102,29 +96,43 @@ struct ActivityRow: View {
     }
 }
 
+// MARK: - ProgressCapsule
+
+private struct ProgressCapsule: Shape {
+    var fraction: Double    // clamped to 0...1 before use
+
+    var animatableData: Double {
+        get { fraction }
+        set { fraction = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let width = max(rect.height, CGFloat(fraction) * rect.width)
+        return Capsule().path(in: CGRect(x: rect.minX, y: rect.minY,
+                                         width: width, height: rect.height))
+    }
+}
+
 // MARK: - ArcProgressBar
 
 struct ArcProgressBar<Label: View>: View {
     var fraction: Double    // clamped to 0...1 for display
     @ViewBuilder var label: () -> Label
 
-    private var clampedFraction: CGFloat { CGFloat(min(max(fraction, 0), 1)) }
+    private var clampedFraction: Double { min(max(fraction, 0), 1) }
 
     var body: some View {
         VStack(spacing: 2) {
             label()
 
-            GeometryReader { geo in
-                let height = geo.size.height
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(Color.secondary.opacity(0.3))
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.secondary.opacity(0.3))
 
-                    Capsule()
-                        .fill(Color.accentColor)
-                        .frame(width: max(height, clampedFraction * geo.size.width))
-                }
+                ProgressCapsule(fraction: clampedFraction)
+                    .fill(Color.accentColor)
             }
+            .animation(.smooth, value: clampedFraction)
             .frame(height: 8)
         }
         .font(.footnote)
@@ -219,8 +227,6 @@ struct WatchHomeView: View {
         }
     }
 
-    let inset: CGFloat = 3
-
     @ViewBuilder
     private func activityPage(_ config: ActivityPageConfig) -> some View {
         VStack(spacing: 7) {
@@ -230,7 +236,6 @@ struct WatchHomeView: View {
                 value: config.steps.formatted(),
                 goal: "\(config.goalSteps.formatted()) steps"
             )
-            .padding(.horizontal, inset)
 
             ActivityRow(
                 fraction: config.kmFraction,
@@ -238,7 +243,6 @@ struct WatchHomeView: View {
                 value: String(format: "%.1f", config.km),
                 goal: String(format: "%.1f km", config.goalKm)
             )
-            .padding(.horizontal, inset)
 
             ArcProgressBar(fraction: config.stepsFraction + config.kmFraction) {
                 HStack {
@@ -246,7 +250,6 @@ struct WatchHomeView: View {
                     Spacer()
                     Text(String(format: "%.1f%%", (config.stepsFraction + config.kmFraction) * 100))
                 }
-                .padding(.horizontal, inset)
             }
 
             if let secondary = config.secondaryBar {
@@ -256,7 +259,6 @@ struct WatchHomeView: View {
                         Spacer()
                         Text(String(format: "%.1f%%", secondary.fraction * 100))
                     }
-                    .padding(.horizontal, inset)
                 }
             }
         }
@@ -314,7 +316,16 @@ struct WatchHomeView: View {
 }
 
 #Preview {
-    // Realistic day: quiet night, morning walk, lunch stroll, evening ride
+    @Previewable @State var scenarioIndex = 0
+
+    let scenarios: [(steps: Int, km: Double)] = [
+        (0, 0),
+        (3_000, 4.0),
+        (8_000, 10.0),
+        (15_000, 20.0),
+        (22_000, 35.0)
+    ]
+
     let hourlySteps = [0, 0, 0, 0, 0, 0, 80, 950, 1200, 400, 300, 200,
                        750, 600, 150, 200, 180, 300, 1100, 800, 400, 100, 50, 0]
     let hourlyKm: [Double] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -322,10 +333,29 @@ struct WatchHomeView: View {
 
     let store = ChallengeStore(skipHealthKit: true)
     let todayKey = Date.todayKey()
-    store.entries = [
-        todayKey: DailyEntry(id: todayKey, steps: 15000, cyclingKm: 20, date: .now)
-    ]
-    store.hourlyActivity = (0..<24).map { HourlyActivity(hour: $0, steps: hourlySteps[$0], km: hourlyKm[$0]) }
-    return WatchHomeView()
+
+    WatchHomeView()
         .environment(store)
+        .onChange(of: scenarioIndex) { _, idx in
+            let s = scenarios[idx]
+            withAnimation(.smooth) {
+                store.entries[todayKey] = DailyEntry(id: todayKey, steps: s.steps, cyclingKm: s.km, date: .now)
+            }
+        }
+        .overlay(alignment: .bottom) {
+            Button {
+                scenarioIndex = (scenarioIndex + 1) % scenarios.count
+            } label: {
+                Text("\(scenarioIndex + 1)/\(scenarios.count)")
+                    .font(.system(size: 9, weight: .bold))
+                    .padding(4)
+                    .background(.ultraThinMaterial, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .padding(.bottom, 2)
+        }
+        .onAppear {
+            store.hourlyActivity = (0..<24).map { HourlyActivity(hour: $0, steps: hourlySteps[$0], km: hourlyKm[$0]) }
+            store.entries = [todayKey: DailyEntry(id: todayKey, steps: 0, cyclingKm: 0, date: .now)]
+        }
 }
