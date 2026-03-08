@@ -62,12 +62,13 @@ struct WatchHomeView: View {
                     Task {
                         isRefreshing = true
                         await store.refreshFromHealthKit()
+                        try? await Task.sleep(for: .seconds(0.2))
                         isRefreshing = false
                     }
                 } label: {
-                    if isRefreshing {
-                        ProgressView()
-                    } else {
+                    HStack {
+                        Image(systemName: "arrow.trianglehead.counterclockwise")
+                            .symbolEffect(.rotate, isActive: isRefreshing)
                         Text("Refresh")
                     }
                 }
@@ -75,6 +76,7 @@ struct WatchHomeView: View {
                 .tint(.accentColor)
                 .disabled(isRefreshing)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .animation(.default, value: isRefreshing)
             }
             .tabViewStyle(.verticalPage)
         }
