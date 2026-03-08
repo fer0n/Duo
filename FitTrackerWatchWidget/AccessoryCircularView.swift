@@ -26,8 +26,13 @@ struct AccessoryCircularView: View {
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.65,
+        weeklyProgressRaw: 0.65,
         stepsContrib: 0.4,
         cyclingContrib: 0.25,
-        dailyTargetText: "5.8k steps + 3.9km"
+        dailyTargetText: "5.8k steps + 3.9km",
+        dailyTargetSteps: 5800,
+        dailyTargetKm: 3.9,
+        weeklySteps: 24000,
+        weeklyKm: 10.0
     )
 }

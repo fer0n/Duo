@@ -13,5 +13,6 @@ struct FitTrackerWatchWidgetExtensionBundle: WidgetBundle {
     var body: some Widget {
         FitChallengeRectangularWidget()
         FitChallengeCircularWidget()
+        FitChallengeCornerWidget()
     }
 }

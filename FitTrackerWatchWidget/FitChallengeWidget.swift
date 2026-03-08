@@ -5,10 +5,15 @@ import SwiftUI
 
 struct FitChallengeEntry: TimelineEntry {
     let date: Date
-    let weeklyProgress: Double
+    let weeklyProgress: Double   // capped at 1.0 for normal progress display
+    let weeklyProgressRaw: Double // uncapped, for post-goal gauge
     let stepsContrib: Double
     let cyclingContrib: Double
     let dailyTargetText: String
+    let dailyTargetSteps: Int
+    let dailyTargetKm: Double
+    let weeklySteps: Int
+    let weeklyKm: Double
 }
 
 // MARK: - Nonisolated data reader for widget (avoids @MainActor ChallengeStore)
@@ -51,12 +56,18 @@ struct FitChallengeProvider: TimelineProvider {
             startingOn: reader.settings.challengeStartWeekday
         )
         let target = ProgressCalculator.dailyTarget(weeklyProgress: progress, remainingDays: remaining)
+        let raw = Double(reader.weeklySteps) / ProgressCalculator.stepGoal + reader.weeklyKm / ProgressCalculator.kmGoal
         return FitChallengeEntry(
             date: date,
             weeklyProgress: progress,
+            weeklyProgressRaw: raw,
             stepsContrib: ProgressCalculator.stepsContribution(steps: reader.weeklySteps),
             cyclingContrib: ProgressCalculator.cyclingContribution(km: reader.weeklyKm, steps: reader.weeklySteps),
-            dailyTargetText: ProgressCalculator.dailyTargetText(steps: target.steps, km: target.km)
+            dailyTargetText: ProgressCalculator.dailyTargetText(steps: target.steps, km: target.km),
+            dailyTargetSteps: target.steps,
+            dailyTargetKm: target.km,
+            weeklySteps: reader.weeklySteps,
+            weeklyKm: reader.weeklyKm
         )
     }
 
@@ -64,9 +75,14 @@ struct FitChallengeProvider: TimelineProvider {
         FitChallengeEntry(
             date: .now,
             weeklyProgress: 0.5,
+            weeklyProgressRaw: 0.5,
             stepsContrib: 0.3,
             cyclingContrib: 0.2,
-            dailyTargetText: "8.5k steps + 4.0km"
+            dailyTargetText: "8.5k steps + 4.0km",
+            dailyTargetSteps: 8500,
+            dailyTargetKm: 4.0,
+            weeklySteps: 18000,
+            weeklyKm: 8.0
         )
     }
 
@@ -94,10 +110,27 @@ struct FitChallengeRectangularWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: FitChallengeProvider()) { entry in
             AccessoryRectangularView(entry: entry)
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("FitChallenge")
         .description("Weekly challenge progress bar")
         .supportedFamilies([.accessoryRectangular])
+    }
+}
+
+// MARK: - Corner Widget (Nike Hybrid face)
+
+struct FitChallengeCornerWidget: Widget {
+    let kind = "FitChallengeCorner"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: FitChallengeProvider()) { entry in
+            AccessoryCornerView(entry: entry)
+                .containerBackground(.clear, for: .widget)
+        }
+        .configurationDisplayName("FitChallenge")
+        .description("Weekly progress with daily target")
+        .supportedFamilies([.accessoryCorner])
     }
 }
 
@@ -109,6 +142,7 @@ struct FitChallengeCircularWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: FitChallengeProvider()) { entry in
             AccessoryCircularView(entry: entry)
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("FitChallenge")
         .description("Weekly progress ring")

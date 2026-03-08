@@ -58,15 +58,10 @@ struct ComplicationProgressBar: View {
                 }
 
                 if cyclingContrib > 0 {
-                    UnevenRoundedRectangle(
-                        topLeadingRadius: 0,
-                        bottomLeadingRadius: 0,
-                        bottomTrailingRadius: 4,
-                        topTrailingRadius: 4
-                    )
-                    .fill(Color.green)
-                    .frame(width: width * min(cyclingContrib, 1.0 - stepsContrib), height: 8)
-                    .offset(x: width * stepsContrib)
+                    Capsule()
+                        .fill(Color.green)
+                        .frame(width: width * min(cyclingContrib, 1.0 - stepsContrib), height: 8)
+                        .offset(x: width * stepsContrib)
                 }
             }
         }
@@ -80,15 +75,25 @@ struct ComplicationProgressBar: View {
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.65,
+        weeklyProgressRaw: 0.65,
         stepsContrib: 0.4,
         cyclingContrib: 0.25,
-        dailyTargetText: "5.8k steps + 3.9km"
+        dailyTargetText: "5.8k steps + 3.9km",
+        dailyTargetSteps: 5800,
+        dailyTargetKm: 3.9,
+        weeklySteps: 24000,
+        weeklyKm: 10.0
     )
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.0,
+        weeklyProgressRaw: 0.0,
         stepsContrib: 0.0,
         cyclingContrib: 0.0,
-        dailyTargetText: "8.6k steps + 5.7km"
+        dailyTargetText: "8.6k steps + 5.7km",
+        dailyTargetSteps: 8600,
+        dailyTargetKm: 5.7,
+        weeklySteps: 0,
+        weeklyKm: 0.0
     )
 }
