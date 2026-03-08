@@ -5,7 +5,6 @@ struct ActivityRow: View {
     var systemImage: String
     var value: String
     var goal: String
-    var color: Color = .accentColor
     var secondaryFraction: Double = 0
 
     var body: some View {
@@ -13,7 +12,6 @@ struct ActivityRow: View {
             SingleArcGauge(
                 fraction: fraction,
                 systemImage: systemImage,
-                color: color,
                 secondaryFraction: secondaryFraction
             )
             .frame(width: 45, height: 45)

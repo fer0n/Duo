@@ -46,7 +46,6 @@ struct HomeView: View {
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", todayKm),
                             goal: String(format: "%.1f km", store.dailyGoal.km),
-                            color: bikeColor,
                             secondaryFraction: dailyStepsFraction + dailyKmFraction
                         )
                         ArcProgressBar(
@@ -80,7 +79,6 @@ struct HomeView: View {
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", store.weeklyKm),
                             goal: String(format: "%.1f km", ProgressCalculator.kmGoal),
-                            color: bikeColor,
                             secondaryFraction: weeklyStepsFraction + weeklyKmFraction
                         )
                         ArcProgressBar(

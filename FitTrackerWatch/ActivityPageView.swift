@@ -43,7 +43,6 @@ struct ActivityPageView: View {
                 systemImage: "figure.outdoor.cycle",
                 value: String(format: "%.1f", config.km),
                 goal: String(format: "%.1f km", config.goalKm),
-                color: bikeColor,
                 secondaryFraction: config.stepsFraction + config.kmFraction
             )
         }

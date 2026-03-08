@@ -32,7 +32,6 @@ private struct ArcShape: Shape {
 struct SingleArcGauge: View {
     var fraction: Double        // raw, unbounded (>1.0 = overflow/lap)
     var systemImage: String
-    var color: Color = .accentColor
     var secondaryFraction: Double = 0   // combined context arc, drawn dimly behind
 
     var body: some View {
@@ -45,11 +44,11 @@ struct SingleArcGauge: View {
                     .stroke(Color.secondary.opacity(0.3), lineWidth: lineWidth)
 
                 ArcShape(fraction: secondaryFraction)
-                    .stroke(color.opacity(0.35),
+                    .stroke(Color.accentColor.opacity(0.3),
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
 
                 ArcShape(fraction: fraction)
-                    .stroke(color,
+                    .stroke(Color.accentColor,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                     .shadow(color: .black, radius: 3)
 
