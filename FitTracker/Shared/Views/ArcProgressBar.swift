@@ -33,7 +33,7 @@ struct ArcProgressBar<Label: View>: View {
 
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(Color.secondary.opacity(0.3))
+                    .fill(Color.secondary.opacity(0.4))
 
                 ProgressCapsule(fraction: scaledTotal)
                     .fill(kmColor)

@@ -60,11 +60,16 @@ struct FitChallengeProvider: TimelineProvider {
 
     private func makeEntry(date: Date) -> FitChallengeEntry {
         let reader = WidgetDataReader()
-        let progress = ProgressCalculator.weeklyProgress(steps: reader.weeklySteps, km: reader.weeklyKm)
         let remaining = Calendar.current.remainingDaysInChallengeWeek(
             startingOn: reader.settings.challengeStartWeekday
         )
-        let target = ProgressCalculator.dailyTarget(weeklyProgress: progress, remainingDays: remaining)
+        // Daily target is based on progress *before* today so it stays stable throughout the day
+        let prevProgress = ProgressCalculator.weeklyProgress(
+            steps: reader.weeklySteps - reader.todaySteps,
+            km: reader.weeklyKm - reader.todayKm
+        )
+        let target = ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remaining)
+        let progress = ProgressCalculator.weeklyProgress(steps: reader.weeklySteps, km: reader.weeklyKm)
         let raw = Double(reader.weeklySteps) / ProgressCalculator.stepGoal + reader.weeklyKm / ProgressCalculator.kmGoal
         return FitChallengeEntry(
             date: date,
