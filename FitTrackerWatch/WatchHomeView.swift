@@ -45,8 +45,8 @@ struct WatchHomeView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                NavigationLink("Log Activity") {
-                    WatchDataEntryView()
+                Button("Refresh") {
+                    Task { await store.refreshFromHealthKit() }
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.blue)

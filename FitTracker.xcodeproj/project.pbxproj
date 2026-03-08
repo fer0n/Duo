@@ -91,6 +91,7 @@
 				"Shared/Extensions/Date+Challenge.swift",
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/DailyEntry.swift,
+				Shared/Models/HealthKitManager.swift,
 				Shared/Models/ProgressCalculator.swift,
 			);
 			target = 884E38642F5C8A4500404F42 /* FitTrackerWatch */;
@@ -102,6 +103,7 @@
 				"Shared/Extensions/Date+Challenge.swift",
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/DailyEntry.swift,
+				Shared/Models/HealthKitManager.swift,
 				Shared/Models/ProgressCalculator.swift,
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
@@ -407,6 +409,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = FitTrackerWatchOS;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.pentlandFirth.FitTracker;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -441,6 +444,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = FitTrackerWatchOS;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.pentlandFirth.FitTracker;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -672,6 +676,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -719,6 +724,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
