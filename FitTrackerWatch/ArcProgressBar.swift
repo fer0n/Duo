@@ -17,13 +17,13 @@ private struct ProgressCapsule: Shape {
 
 struct ArcProgressBar<Label: View>: View {
     var fraction: Double    // clamped to 0...1 for display
-    @ViewBuilder var label: () -> Label
+    @ViewBuilder let label: Label
 
     private var clampedFraction: Double { min(max(fraction, 0), 1) }
 
     var body: some View {
         VStack(spacing: 2) {
-            label()
+            label
 
             ZStack(alignment: .leading) {
                 Capsule()

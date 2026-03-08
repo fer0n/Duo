@@ -9,20 +9,16 @@ struct SettingsView: View {
     ]
 
     var body: some View {
+        @Bindable var store = store
         NavigationStack {
             Form {
                 Section("Challenge Week Start") {
-                    Picker("Week starts on", selection: Binding(
-                        get: { store.settings.challengeStartWeekday },
-                        set: {
-                            store.settings.challengeStartWeekday = $0
-                            store.save()
-                        }
-                    )) {
+                    Picker("Week starts on", selection: $store.settings.challengeStartWeekday) {
                         ForEach(weekdays, id: \.0) { day in
                             Text(day.1).tag(day.0)
                         }
                     }
+                    .onChange(of: store.settings.challengeStartWeekday) { store.save() }
                 }
 
                 Section("Weekly Goals") {

@@ -147,9 +147,13 @@ final class HealthKitManager {
 
     // MARK: - Helpers
 
+    private static let dayKeyFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
     static func dateKey(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        dayKeyFormatter.string(from: date)
     }
 }

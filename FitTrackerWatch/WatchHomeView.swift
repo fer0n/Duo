@@ -7,24 +7,14 @@ struct WatchHomeView: View {
     private var todaySteps: Int { todayEntry?.steps ?? 0 }
     private var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
 
-    /// Daily target computed from previous days only — stays fixed as today's data accumulates.
-    private var dailyGoal: (steps: Int, km: Double) {
-        let prev = store.currentWeekEntries().filter { !Calendar.current.isDateInToday($0.date) }
-        let prevProgress = ProgressCalculator.weeklyProgress(
-            steps: prev.reduce(0) { $0 + $1.steps },
-            km: prev.reduce(0.0) { $0 + $1.cyclingKm }
-        )
-        return ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: store.remainingDays)
-    }
-
     private var dailyStepsFraction: Double {
-        guard dailyGoal.steps > 0 else { return 0 }
-        return Double(todaySteps) / Double(dailyGoal.steps)
+        guard store.dailyGoal.steps > 0 else { return 0 }
+        return Double(todaySteps) / Double(store.dailyGoal.steps)
     }
 
     private var dailyKmFraction: Double {
-        guard dailyGoal.km > 0 else { return 0 }
-        return todayKm / dailyGoal.km
+        guard store.dailyGoal.km > 0 else { return 0 }
+        return todayKm / store.dailyGoal.km
     }
 
     private var weeklyStepsFraction: Double {
@@ -45,8 +35,8 @@ struct WatchHomeView: View {
                     kmFraction: dailyKmFraction,
                     steps: todaySteps,
                     km: todayKm,
-                    goalSteps: dailyGoal.steps,
-                    goalKm: dailyGoal.km,
+                    goalSteps: store.dailyGoal.steps,
+                    goalKm: store.dailyGoal.km,
                     secondaryBar: ("Week", weeklyStepsFraction + weeklyKmFraction)
                 ))
 

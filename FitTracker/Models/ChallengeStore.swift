@@ -107,4 +107,13 @@ final class ChallengeStore {
     var remainingDays: Int {
         Calendar.current.remainingDaysInChallengeWeek(startingOn: settings.challengeStartWeekday)
     }
+
+    var dailyGoal: (steps: Int, km: Double) {
+        let prev = currentWeekEntries().filter { !Calendar.current.isDateInToday($0.date) }
+        let prevProgress = ProgressCalculator.weeklyProgress(
+            steps: prev.reduce(0) { $0 + $1.steps },
+            km: prev.reduce(0.0) { $0 + $1.cyclingKm }
+        )
+        return ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remainingDays)
+    }
 }
