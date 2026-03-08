@@ -38,14 +38,16 @@ struct HomeView: View {
                             fraction: dailyStepsFraction,
                             systemImage: "figure.run",
                             value: todaySteps.formatted(),
-                            goal: "\(store.dailyGoal.steps.formatted()) steps"
+                            goal: "\(store.dailyGoal.steps.formatted()) steps",
+                            secondaryFraction: dailyStepsFraction + dailyKmFraction
                         )
                         ActivityRow(
                             fraction: dailyKmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", todayKm),
                             goal: String(format: "%.1f km", store.dailyGoal.km),
-                            color: bikeColor
+                            color: bikeColor,
+                            secondaryFraction: dailyStepsFraction + dailyKmFraction
                         )
                         ArcProgressBar(
                             stepsFraction: dailyStepsFraction,
@@ -70,14 +72,16 @@ struct HomeView: View {
                             fraction: weeklyStepsFraction,
                             systemImage: "figure.run",
                             value: store.weeklySteps.formatted(),
-                            goal: "\(Int(ProgressCalculator.stepGoal).formatted()) steps"
+                            goal: "\(Int(ProgressCalculator.stepGoal).formatted()) steps",
+                            secondaryFraction: weeklyStepsFraction + weeklyKmFraction
                         )
                         ActivityRow(
                             fraction: weeklyKmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", store.weeklyKm),
                             goal: String(format: "%.1f km", ProgressCalculator.kmGoal),
-                            color: bikeColor
+                            color: bikeColor,
+                            secondaryFraction: weeklyStepsFraction + weeklyKmFraction
                         )
                         ArcProgressBar(
                             stepsFraction: weeklyStepsFraction,

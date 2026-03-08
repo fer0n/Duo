@@ -6,11 +6,17 @@ struct ActivityRow: View {
     var value: String
     var goal: String
     var color: Color = .accentColor
+    var secondaryFraction: Double = 0
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            SingleArcGauge(fraction: fraction, systemImage: systemImage, color: color)
-                .frame(width: 45, height: 45)
+            SingleArcGauge(
+                fraction: fraction,
+                systemImage: systemImage,
+                color: color,
+                secondaryFraction: secondaryFraction
+            )
+            .frame(width: 45, height: 45)
 
             Spacer()
 
