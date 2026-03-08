@@ -23,6 +23,9 @@ struct ActivityPageView: View {
                     Text(config.label)
                     Spacer()
                     Text(String(format: "%.1f%%", (config.stepsFraction + config.kmFraction) * 100))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+
                 }
             }
             .padding(.bottom, 5)
