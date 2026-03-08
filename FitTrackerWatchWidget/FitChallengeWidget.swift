@@ -70,7 +70,7 @@ struct FitChallengeProvider: TimelineProvider {
         )
         let target = ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remaining)
         let progress = ProgressCalculator.weeklyProgress(steps: reader.weeklySteps, km: reader.weeklyKm)
-        let raw = Double(reader.weeklySteps) / ProgressCalculator.stepGoal + reader.weeklyKm / ProgressCalculator.kmGoal
+        let raw = ProgressCalculator.weeklyProgressRaw(steps: reader.weeklySteps, km: reader.weeklyKm)
         return FitChallengeEntry(
             date: date,
             weeklyProgress: progress,

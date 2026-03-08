@@ -7,9 +7,7 @@ struct HourlyActivity: Identifiable {
     let steps: Int
     let km: Double
     var id: Int { hour }
-    var units: Double {
-        Double(steps) / ProgressCalculator.stepGoal + km / ProgressCalculator.kmGoal
-    }
+    var units: Double { ProgressCalculator.weeklyProgressRaw(steps: steps, km: km) }
 }
 
 @Observable
@@ -105,9 +103,16 @@ final class ChallengeStore {
         ProgressCalculator.weeklyProgress(steps: weeklySteps, km: weeklyKm)
     }
 
+    var weeklyStepsFraction: Double { Double(weeklySteps) / ProgressCalculator.stepGoal }
+    var weeklyKmFraction: Double { weeklyKm / ProgressCalculator.kmGoal }
+
     var remainingDays: Int {
         Calendar.current.remainingDaysInChallengeWeek(startingOn: settings.challengeStartWeekday)
     }
+
+    var todayEntry: DailyEntry? { entries[Date.todayKey()] }
+    var todaySteps: Int { todayEntry?.steps ?? 0 }
+    var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
 
     var dailyGoal: (steps: Int, km: Double) {
         let prev = currentWeekEntries().filter { !Calendar.current.isDateInToday($0.date) }
@@ -116,5 +121,15 @@ final class ChallengeStore {
             km: prev.reduce(0.0) { $0 + $1.cyclingKm }
         )
         return ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remainingDays)
+    }
+
+    var dailyStepsFraction: Double {
+        guard dailyGoal.steps > 0 else { return 0 }
+        return Double(todaySteps) / Double(dailyGoal.steps)
+    }
+
+    var dailyKmFraction: Double {
+        guard dailyGoal.km > 0 else { return 0 }
+        return todayKm / dailyGoal.km
     }
 }

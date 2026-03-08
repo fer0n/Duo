@@ -3,28 +3,6 @@ import SwiftUI
 struct WatchHomeView: View {
     @Environment(ChallengeStore.self) private var store
 
-    private var todayEntry: DailyEntry? { store.entries[Date.todayKey()] }
-    private var todaySteps: Int { todayEntry?.steps ?? 0 }
-    private var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
-
-    private var dailyStepsFraction: Double {
-        guard store.dailyGoal.steps > 0 else { return 0 }
-        return Double(todaySteps) / Double(store.dailyGoal.steps)
-    }
-
-    private var dailyKmFraction: Double {
-        guard store.dailyGoal.km > 0 else { return 0 }
-        return todayKm / store.dailyGoal.km
-    }
-
-    private var weeklyStepsFraction: Double {
-        Double(store.weeklySteps) / ProgressCalculator.stepGoal
-    }
-
-    private var weeklyKmFraction: Double {
-        store.weeklyKm / ProgressCalculator.kmGoal
-    }
-
     @State private var isRefreshing = false
 
     var body: some View {
@@ -33,10 +11,10 @@ struct WatchHomeView: View {
                 // Page 1: Today
                 ActivityPageView(config: ActivityPageConfig(
                     label: "Today",
-                    stepsFraction: dailyStepsFraction,
-                    kmFraction: dailyKmFraction,
-                    steps: todaySteps,
-                    km: todayKm,
+                    stepsFraction: store.dailyStepsFraction,
+                    kmFraction: store.dailyKmFraction,
+                    steps: store.todaySteps,
+                    km: store.todayKm,
                     goalSteps: store.dailyGoal.steps,
                     goalKm: store.dailyGoal.km
                 ))
@@ -50,8 +28,8 @@ struct WatchHomeView: View {
                 // Page 3: This week
                 ActivityPageView(config: ActivityPageConfig(
                     label: "Week",
-                    stepsFraction: weeklyStepsFraction,
-                    kmFraction: weeklyKmFraction,
+                    stepsFraction: store.weeklyStepsFraction,
+                    kmFraction: store.weeklyKmFraction,
                     steps: store.weeklySteps,
                     km: store.weeklyKm,
                     goalSteps: Int(ProgressCalculator.stepGoal),

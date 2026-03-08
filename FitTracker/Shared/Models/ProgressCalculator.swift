@@ -4,10 +4,14 @@ enum ProgressCalculator {
     static let stepGoal: Double = 60_000
     static let kmGoal: Double = 40.0
 
+    // Raw combined weekly progress (uncapped)
+    static func weeklyProgressRaw(steps: Int, km: Double) -> Double {
+        Double(steps) / stepGoal + km / kmGoal
+    }
+
     // Combined weekly progress, capped at 1.0
     static func weeklyProgress(steps: Int, km: Double) -> Double {
-        let raw = Double(steps) / stepGoal + km / kmGoal
-        return min(raw, 1.0)
+        min(weeklyProgressRaw(steps: steps, km: km), 1.0)
     }
 
     // Steps fraction of the full bar (0...1)

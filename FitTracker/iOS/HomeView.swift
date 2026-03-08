@@ -5,28 +5,6 @@ private let bikeColor = Color.accentColor.mix(with: .black, by: 0.2)
 struct HomeView: View {
     @Environment(ChallengeStore.self) private var store
 
-    private var todayEntry: DailyEntry? { store.entries[Date.todayKey()] }
-    private var todaySteps: Int { todayEntry?.steps ?? 0 }
-    private var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
-
-    private var dailyStepsFraction: Double {
-        guard store.dailyGoal.steps > 0 else { return 0 }
-        return Double(todaySteps) / Double(store.dailyGoal.steps)
-    }
-
-    private var dailyKmFraction: Double {
-        guard store.dailyGoal.km > 0 else { return 0 }
-        return todayKm / store.dailyGoal.km
-    }
-
-    private var weeklyStepsFraction: Double {
-        Double(store.weeklySteps) / ProgressCalculator.stepGoal
-    }
-
-    private var weeklyKmFraction: Double {
-        store.weeklyKm / ProgressCalculator.kmGoal
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -35,29 +13,29 @@ struct HomeView: View {
                     StatCard {
                         CardHeader("Today")
                         ActivityRow(
-                            fraction: dailyStepsFraction,
+                            fraction: store.dailyStepsFraction,
                             systemImage: "figure.run",
-                            value: todaySteps.formatted(),
+                            value: store.todaySteps.formatted(),
                             goal: "\(store.dailyGoal.steps.formatted()) steps",
-                            secondaryFraction: dailyStepsFraction + dailyKmFraction
+                            secondaryFraction: store.dailyStepsFraction + store.dailyKmFraction
                         )
                         ActivityRow(
-                            fraction: dailyKmFraction,
+                            fraction: store.dailyKmFraction,
                             systemImage: "figure.outdoor.cycle",
-                            value: String(format: "%.1f", todayKm),
+                            value: String(format: "%.1f", store.todayKm),
                             goal: String(format: "%.1f km", store.dailyGoal.km),
-                            secondaryFraction: dailyStepsFraction + dailyKmFraction
+                            secondaryFraction: store.dailyStepsFraction + store.dailyKmFraction
                         )
                         ArcProgressBar(
-                            stepsFraction: dailyStepsFraction,
-                            kmFraction: dailyKmFraction,
+                            stepsFraction: store.dailyStepsFraction,
+                            kmFraction: store.dailyKmFraction,
                             kmColor: bikeColor
                         ) {
-                            ProgressLabel("Today", fraction: dailyStepsFraction + dailyKmFraction)
+                            ProgressLabel("Today", fraction: store.dailyStepsFraction + store.dailyKmFraction)
                         }
                         ArcProgressBar(
-                            stepsFraction: weeklyStepsFraction,
-                            kmFraction: weeklyKmFraction,
+                            stepsFraction: store.weeklyStepsFraction,
+                            kmFraction: store.weeklyKmFraction,
                             kmColor: bikeColor
                         ) {
                             ProgressLabel("Week", fraction: store.weeklyProgress)
@@ -68,22 +46,22 @@ struct HomeView: View {
                     StatCard {
                         CardHeader("This Week")
                         ActivityRow(
-                            fraction: weeklyStepsFraction,
+                            fraction: store.weeklyStepsFraction,
                             systemImage: "figure.run",
                             value: store.weeklySteps.formatted(),
                             goal: "\(Int(ProgressCalculator.stepGoal).formatted()) steps",
-                            secondaryFraction: weeklyStepsFraction + weeklyKmFraction
+                            secondaryFraction: store.weeklyStepsFraction + store.weeklyKmFraction
                         )
                         ActivityRow(
-                            fraction: weeklyKmFraction,
+                            fraction: store.weeklyKmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", store.weeklyKm),
                             goal: String(format: "%.1f km", ProgressCalculator.kmGoal),
-                            secondaryFraction: weeklyStepsFraction + weeklyKmFraction
+                            secondaryFraction: store.weeklyStepsFraction + store.weeklyKmFraction
                         )
                         ArcProgressBar(
-                            stepsFraction: weeklyStepsFraction,
-                            kmFraction: weeklyKmFraction,
+                            stepsFraction: store.weeklyStepsFraction,
+                            kmFraction: store.weeklyKmFraction,
                             kmColor: bikeColor
                         ) {
                             ProgressLabel("Combined", fraction: store.weeklyProgress)
