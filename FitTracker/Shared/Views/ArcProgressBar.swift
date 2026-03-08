@@ -43,7 +43,7 @@ struct ArcProgressBar<Label: View>: View {
             }
             .animation(.smooth, value: clampedTotal)
             .animation(.smooth, value: clampedSteps)
-            .frame(height: 15)
+            .frame(height: 20)
         }
         .font(.footnote)
         .fontWeight(.bold)

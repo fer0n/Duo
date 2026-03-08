@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let bikeColor = Color.accentColor.mix(with: .black, by: 0.25)
+private let bikeColor = Color.accentColor.mix(with: .black, by: 0.2)
 
 struct HomeView: View {
     @Environment(ChallengeStore.self) private var store
