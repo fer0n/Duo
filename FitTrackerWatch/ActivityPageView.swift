@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let bikeColor = Color.accentColor.mix(with: .black, by: 0.25)
+
 struct ActivityPageConfig {
     var label: String
     var stepsFraction: Double
@@ -8,14 +10,14 @@ struct ActivityPageConfig {
     var km: Double
     var goalSteps: Int
     var goalKm: Double
-    var secondaryBar: (label: String, fraction: Double)?
+    var secondaryBar: (label: String, stepsFraction: Double, kmFraction: Double)?
 }
 
 struct ActivityPageView: View {
     let config: ActivityPageConfig
 
     var body: some View {
-        VStack(spacing: 7) {
+        VStack(spacing: 15) {
             ActivityRow(
                 fraction: config.stepsFraction,
                 systemImage: "figure.run",
@@ -27,24 +29,15 @@ struct ActivityPageView: View {
                 fraction: config.kmFraction,
                 systemImage: "figure.outdoor.cycle",
                 value: String(format: "%.1f", config.km),
-                goal: String(format: "%.1f km", config.goalKm)
+                goal: String(format: "%.1f km", config.goalKm),
+                color: bikeColor
             )
 
-            ArcProgressBar(fraction: config.stepsFraction + config.kmFraction) {
+            ArcProgressBar(stepsFraction: config.stepsFraction, kmFraction: config.kmFraction, kmColor: bikeColor) {
                 HStack {
                     Text(config.label)
                     Spacer()
                     Text(String(format: "%.1f%%", (config.stepsFraction + config.kmFraction) * 100))
-                }
-            }
-
-            if let secondary = config.secondaryBar {
-                ArcProgressBar(fraction: secondary.fraction) {
-                    HStack {
-                        Text(secondary.label)
-                        Spacer()
-                        Text(String(format: "%.1f%%", secondary.fraction * 100))
-                    }
                 }
             }
         }

@@ -16,24 +16,34 @@ private struct ProgressCapsule: Shape {
 }
 
 struct ArcProgressBar<Label: View>: View {
-    var fraction: Double    // clamped to 0...1 for display
+    var stepsFraction: Double
+    var kmFraction: Double = 0
+    var kmColor: Color = .accentColor
     @ViewBuilder let label: Label
 
-    private var clampedFraction: Double { min(max(fraction, 0), 1) }
+    private var clampedSteps: Double { min(max(stepsFraction, 0), 1) }
+    private var clampedKm: Double { min(max(kmFraction, 0), 1) }
+    private var clampedTotal: Double { min(clampedSteps + clampedKm, 1) }
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 4) {
             label
 
             ZStack(alignment: .leading) {
                 Capsule()
                     .fill(Color.secondary.opacity(0.3))
 
-                ProgressCapsule(fraction: clampedFraction)
+                ProgressCapsule(fraction: clampedTotal)
+                    .fill(kmColor)
+
+                ProgressCapsule(fraction: clampedSteps)
                     .fill(Color.accentColor)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.3), radius: 3)
             }
-            .animation(.smooth, value: clampedFraction)
-            .frame(height: 8)
+            .animation(.smooth, value: clampedTotal)
+            .animation(.smooth, value: clampedSteps)
+            .frame(height: 15)
         }
         .font(.footnote)
         .fontWeight(.bold)

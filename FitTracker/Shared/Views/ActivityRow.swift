@@ -5,10 +5,11 @@ struct ActivityRow: View {
     var systemImage: String
     var value: String
     var goal: String
+    var color: Color = .accentColor
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            SingleArcGauge(fraction: fraction, systemImage: systemImage)
+            SingleArcGauge(fraction: fraction, systemImage: systemImage, color: color)
                 .frame(width: 45, height: 45)
 
             Spacer()

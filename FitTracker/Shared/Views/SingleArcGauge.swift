@@ -32,6 +32,7 @@ private struct ArcShape: Shape {
 struct SingleArcGauge: View {
     var fraction: Double    // raw, unbounded (>1.0 = overflow/lap)
     var systemImage: String
+    var color: Color = .accentColor
 
     var body: some View {
         GeometryReader { geo in
@@ -43,7 +44,7 @@ struct SingleArcGauge: View {
                     .stroke(Color.secondary.opacity(0.3), lineWidth: lineWidth)
 
                 ArcShape(fraction: fraction)
-                    .stroke(Color.accentColor,
+                    .stroke(color,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
 
                 Image(systemName: systemImage)

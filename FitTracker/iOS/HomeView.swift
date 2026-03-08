@@ -1,5 +1,7 @@
 import SwiftUI
 
+private let bikeColor = Color.accentColor.mix(with: .black, by: 0.25)
+
 struct HomeView: View {
     @Environment(ChallengeStore.self) private var store
 
@@ -42,12 +44,21 @@ struct HomeView: View {
                             fraction: dailyKmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", todayKm),
-                            goal: String(format: "%.1f km", store.dailyGoal.km)
+                            goal: String(format: "%.1f km", store.dailyGoal.km),
+                            color: bikeColor
                         )
-                        ArcProgressBar(fraction: dailyStepsFraction + dailyKmFraction) {
+                        ArcProgressBar(
+                            stepsFraction: dailyStepsFraction,
+                            kmFraction: dailyKmFraction,
+                            kmColor: bikeColor
+                        ) {
                             ProgressLabel("Today", fraction: dailyStepsFraction + dailyKmFraction)
                         }
-                        ArcProgressBar(fraction: store.weeklyProgress) {
+                        ArcProgressBar(
+                            stepsFraction: weeklyStepsFraction,
+                            kmFraction: weeklyKmFraction,
+                            kmColor: bikeColor
+                        ) {
                             ProgressLabel("Week", fraction: store.weeklyProgress)
                         }
                     }
@@ -65,9 +76,14 @@ struct HomeView: View {
                             fraction: weeklyKmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", store.weeklyKm),
-                            goal: String(format: "%.1f km", ProgressCalculator.kmGoal)
+                            goal: String(format: "%.1f km", ProgressCalculator.kmGoal),
+                            color: bikeColor
                         )
-                        ArcProgressBar(fraction: store.weeklyProgress) {
+                        ArcProgressBar(
+                            stepsFraction: weeklyStepsFraction,
+                            kmFraction: weeklyKmFraction,
+                            kmColor: bikeColor
+                        ) {
                             ProgressLabel("Combined", fraction: store.weeklyProgress)
                         }
                         HStack {

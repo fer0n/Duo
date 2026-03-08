@@ -38,8 +38,7 @@ struct WatchHomeView: View {
                     steps: todaySteps,
                     km: todayKm,
                     goalSteps: store.dailyGoal.steps,
-                    goalKm: store.dailyGoal.km,
-                    secondaryBar: ("Week", weeklyStepsFraction + weeklyKmFraction)
+                    goalKm: store.dailyGoal.km
                 ))
 
                 // Page 2: Hourly chart
@@ -86,7 +85,7 @@ struct WatchHomeView: View {
 }
 
 #Preview {
-    @Previewable @State var scenarioIndex = 0
+    @Previewable @State var scenarioIndex = 1
 
     let scenarios: [(steps: Int, km: Double)] = [
         (0, 0),
@@ -106,8 +105,8 @@ struct WatchHomeView: View {
 
     WatchHomeView()
         .environment(store)
-        .onChange(of: scenarioIndex) { _, idx in
-            let s = scenarios[idx]
+        .task(id: scenarioIndex) {
+            let s = scenarios[scenarioIndex]
             withAnimation(.smooth) {
                 store.entries[todayKey] = DailyEntry(id: todayKey, steps: s.steps, cyclingKm: s.km, date: .now)
             }
