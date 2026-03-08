@@ -10,13 +10,13 @@ struct AccessoryCornerView: View {
     private var weeklyDone: Bool { entry.weeklyProgress >= 1.0 }
 
     /// Ratio of today's activity to the daily goal (1.0 = exactly met, >1.0 = overshot).
+    /// Steps and km targets are alternatives — each independently contributes toward 1.0.
     private var dailyProgressRaw: Double {
-        let goalUnits = Double(entry.dailyTargetSteps) / ProgressCalculator.stepGoal
-            + entry.dailyTargetKm / ProgressCalculator.kmGoal
-        guard goalUnits > 0 else { return 0 }
-        let todayUnits = Double(entry.todaySteps) / ProgressCalculator.stepGoal
-            + entry.todayKm / ProgressCalculator.kmGoal
-        return todayUnits / goalUnits
+        let stepsRatio = entry.dailyTargetSteps > 0
+            ? Double(entry.todaySteps) / Double(entry.dailyTargetSteps) : 0
+        let kmRatio = entry.dailyTargetKm > 0
+            ? entry.todayKm / entry.dailyTargetKm : 0
+        return stepsRatio + kmRatio
     }
 
     private var dailyDone: Bool { dailyProgressRaw >= 1.0 }
@@ -83,7 +83,22 @@ struct AccessoryCornerView: View {
         todaySteps: 2900,
         todayKm: 1.95
     )
-    // 78% weekly done, daily goal overshot by 50% (todayUnits = 1.5 × dailyGoalUnits)
+    // manual test
+    FitChallengeEntry(
+        date: .now,
+        weeklyProgress: 0.78,
+        weeklyProgressRaw: 0.78,
+        stepsContrib: 0.5,
+        cyclingContrib: 0.28,
+        dailyTargetText: "1.0k steps + 2.0km",
+        dailyTargetSteps: 1000,
+        dailyTargetKm: 2,
+        weeklySteps: 28800,
+        weeklyKm: 12.0,
+        todaySteps: 1000,
+        todayKm: 1
+    )
+    // 78% weekly done, daily goal overshot by 50% (steps 75% + km 75% = 1.5)
     FitChallengeEntry(
         date: .now,
         weeklyProgress: 0.78,
@@ -95,8 +110,8 @@ struct AccessoryCornerView: View {
         dailyTargetKm: 2.2,
         weeklySteps: 28800,
         weeklyKm: 12.0,
-        todaySteps: 4950,
-        todayKm: 3.3
+        todaySteps: 2475,
+        todayKm: 1.65
     )
     // Weekly goal done
     FitChallengeEntry(
