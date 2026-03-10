@@ -60,15 +60,16 @@ final class ChallengeStore {
         var merged = newEntries
         if merged[todayKey] == nil { merged[todayKey] = entries[todayKey] }
         let newHourlyActivity = newHourly.map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
-        guard merged != entries else { return }
+        let entriesChanged = merged != entries
         let animation: Animation = isInitialRefresh
             ? .smooth(duration: 2).delay(1.5)
             : .smooth(duration: 2)
         isInitialRefresh = false
         withAnimation(animation) {
-            entries = merged
+            if entriesChanged { entries = merged }
             hourlyActivity = newHourlyActivity
         }
+        guard entriesChanged else { return }
         defaults.removeObject(forKey: Self.previousSessionKey)
         hasUnsavedSnapshot = true
         writeEntriesToDefaults()
