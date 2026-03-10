@@ -29,32 +29,33 @@ private struct ArcShape: Shape {
     }
 }
 
-struct SingleArcGauge: View {
+let secondaryColor = Color.accentColor.mix(with: .black, by: 0.1).gradient
+
+struct SingleArcGauge<Content: View>: View {
     var fraction: Double        // raw, unbounded (>1.0 = overflow/lap)
-    var systemImage: String
     var secondaryFraction: Double = 0   // combined context arc, drawn dimly behind
+    @ViewBuilder var content: (CGFloat) -> Content
 
     var body: some View {
         GeometryReader { geo in
             let size = min(geo.size.width, geo.size.height)
-            let lineWidth = max(size * 0.14, 4)
+            let lineWidth = max(size * 0.15, 4)
 
             ZStack {
                 Circle()
-                    .stroke(Color.secondary.opacity(0.4), lineWidth: lineWidth)
+                    .stroke(Color.secondary.opacity(0.23), lineWidth: lineWidth)
 
                 ArcShape(fraction: secondaryFraction)
-                    .stroke(Color.accentColor.opacity(0.3),
+                    .stroke(secondaryColor,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                    .shadow(color: .black, radius: 1)
+                    .shadow(color: .black.opacity(0.5), radius: 3)
 
                 ArcShape(fraction: fraction)
-                    .stroke(Color.accentColor,
+                    .stroke(Color.accentColor.gradient,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                     .shadow(color: .black, radius: 3)
 
-                Image(systemName: systemImage)
-                    .font(.system(size: size * 0.36, weight: .black))
+                content(size)
             }
             .padding(lineWidth / 2)
             .frame(width: size, height: size)

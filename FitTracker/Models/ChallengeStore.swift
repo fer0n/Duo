@@ -50,8 +50,12 @@ final class ChallengeStore {
         let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
         async let weeklyData = healthKit.fetchWeeklyEntries(from: weekStart)
         async let hourlyData = healthKit.fetchTodayHourlyData()
-        entries = await weeklyData
-        hourlyActivity = (await hourlyData).map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
+        let (newEntries, newHourly) = await (weeklyData, hourlyData)
+        let todayKey = Date.todayKey()
+        var merged = newEntries
+        if merged[todayKey] == nil { merged[todayKey] = entries[todayKey] }
+        entries = merged
+        hourlyActivity = newHourly.map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
         writeEntriesToDefaults()
         WidgetCenter.shared.reloadAllTimelines()
     }

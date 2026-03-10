@@ -9,11 +9,10 @@ struct ActivityRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            SingleArcGauge(
-                fraction: fraction,
-                systemImage: systemImage,
-                secondaryFraction: secondaryFraction
-            )
+            SingleArcGauge(fraction: fraction, secondaryFraction: secondaryFraction) { size in
+                Image(systemName: systemImage)
+                    .font(.system(size: size * 0.33, weight: .black))
+            }
             .frame(width: 45, height: 45)
 
             Spacer()
