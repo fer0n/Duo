@@ -9,7 +9,7 @@ struct ActivityRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            SingleArcGauge(fraction: fraction, secondaryFraction: secondaryFraction) { size in
+            SingleArcGauge(fraction: fraction, secondaryFraction: secondaryFraction, secondaryDimming: 0.55) { size in
                 Image(systemName: systemImage)
                     .font(.system(size: size * 0.33, weight: .black))
             }

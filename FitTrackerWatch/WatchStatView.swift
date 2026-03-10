@@ -6,7 +6,7 @@ struct WatchStatView: View {
     let goal: String
 
     var body: some View {
-        HStack(alignment: .center, spacing: 3) {
+        HStack(alignment: .center, spacing: 2) {
             Image(systemName: systemImage)
                 .font(.title3)
                 .fontWeight(.black)

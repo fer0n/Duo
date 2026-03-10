@@ -45,7 +45,7 @@ struct WatchGaugeView: View {
                     goal: goalSteps.formatted()
                 )
                 Spacer()
-                    .frame(minWidth: 5, maxWidth: 10)
+                    .frame(minWidth: 5, maxWidth: 8)
                 WatchStatView(
                     systemImage: "figure.outdoor.cycle",
                     value: todayKm.formatted(),
@@ -54,6 +54,6 @@ struct WatchGaugeView: View {
             }
             .fontWidth(.condensed)
         }
-        .padding(.vertical, -13)
+        .padding(.vertical, -10)
     }
 }

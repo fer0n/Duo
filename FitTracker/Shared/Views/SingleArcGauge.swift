@@ -29,11 +29,10 @@ private struct ArcShape: Shape {
     }
 }
 
-let secondaryColor = Color.accentColor.mix(with: .black, by: 0.1).gradient
-
 struct SingleArcGauge<Content: View>: View {
     var fraction: Double        // raw, unbounded (>1.0 = overflow/lap)
     var secondaryFraction: Double = 0   // combined context arc, drawn dimly behind
+    var secondaryDimming: Double = 0.1  // how much to darken the secondary arc
     @ViewBuilder var content: (CGFloat) -> Content
 
     var body: some View {
@@ -46,7 +45,7 @@ struct SingleArcGauge<Content: View>: View {
                     .stroke(Color.secondary.opacity(0.23), lineWidth: lineWidth)
 
                 ArcShape(fraction: secondaryFraction)
-                    .stroke(secondaryColor,
+                    .stroke(Color.accentColor.mix(with: .black, by: secondaryDimming).gradient,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                     .shadow(color: .black.opacity(0.5), radius: 3)
 
