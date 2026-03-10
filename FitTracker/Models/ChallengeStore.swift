@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import WidgetKit
+import SwiftUI
 
 struct HourlyActivity: Identifiable {
     let hour: Int
@@ -16,6 +17,7 @@ final class ChallengeStore {
     static let appGroupID = "group.com.pentlandFirth.FitTracker"
     private static let entriesKey = "dailyEntries"
     private static let settingsKey = "challengeSettings"
+    private static let previousSessionKey = "previousSessionEntries"
 
     private let defaults: UserDefaults
     private let healthKit = HealthKitManager.shared
@@ -23,6 +25,9 @@ final class ChallengeStore {
     var entries: [String: DailyEntry] = [:]
     var settings = ChallengeSettings()
     var hourlyActivity: [HourlyActivity] = []
+
+    @ObservationIgnored private var hasUnsavedSnapshot = false
+    @ObservationIgnored private var isInitialRefresh = true
 
     init(skipHealthKit: Bool = false) {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
@@ -54,8 +59,18 @@ final class ChallengeStore {
         let todayKey = Date.todayKey()
         var merged = newEntries
         if merged[todayKey] == nil { merged[todayKey] = entries[todayKey] }
-        entries = merged
-        hourlyActivity = newHourly.map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
+        let newHourlyActivity = newHourly.map { HourlyActivity(hour: $0.hour, steps: $0.steps, km: $0.km) }
+        guard merged != entries else { return }
+        let animation: Animation = isInitialRefresh
+            ? .smooth(duration: 2).delay(1.5)
+            : .smooth(duration: 2)
+        isInitialRefresh = false
+        withAnimation(animation) {
+            entries = merged
+            hourlyActivity = newHourlyActivity
+        }
+        defaults.removeObject(forKey: Self.previousSessionKey)
+        hasUnsavedSnapshot = true
         writeEntriesToDefaults()
         WidgetCenter.shared.reloadAllTimelines()
     }
@@ -63,13 +78,25 @@ final class ChallengeStore {
     // MARK: - Persistence
 
     private func loadFromDefaults() {
-        if let data = defaults.data(forKey: Self.entriesKey),
+        // Prefer previous session snapshot (what user last saw) so launch animates to current data.
+        // Falls back to current cache on first launch or after first refresh clears the snapshot.
+        let entriesData = defaults.data(forKey: Self.previousSessionKey)
+            ?? defaults.data(forKey: Self.entriesKey)
+        if let data = entriesData,
            let decoded = try? JSONDecoder().decode([String: DailyEntry].self, from: data) {
             entries = decoded
         }
         if let data = defaults.data(forKey: Self.settingsKey),
            let decoded = try? JSONDecoder().decode(ChallengeSettings.self, from: data) {
             settings = decoded
+        }
+    }
+
+    func saveSessionSnapshot() {
+        guard hasUnsavedSnapshot else { return }
+        if let data = try? JSONEncoder().encode(entries) {
+            defaults.set(data, forKey: Self.previousSessionKey)
+            hasUnsavedSnapshot = false
         }
     }
 

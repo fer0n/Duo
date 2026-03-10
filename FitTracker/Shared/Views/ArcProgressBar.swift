@@ -44,8 +44,8 @@ struct ArcProgressBar<Label: View>: View {
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.4), radius: 3)
             }
-            .animation(.smooth, value: scaledTotal)
-            .animation(.smooth, value: scaledSteps)
+            .animation(.smooth(duration: 2), value: scaledTotal)
+            .animation(.smooth(duration: 2), value: scaledSteps)
             .frame(height: 20)
         }
         .font(.footnote)

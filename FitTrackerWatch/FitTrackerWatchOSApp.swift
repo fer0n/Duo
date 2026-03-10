@@ -13,6 +13,9 @@ struct FitTrackerWatchApp: App {
             }
             .environment(store)
             .onChange(of: scenePhase) { _, phase in
+                if phase == .background {
+                    store.saveSessionSnapshot()
+                }
                 guard phase == .active else { return }
                 Task { await store.refreshFromHealthKit() }
                 scheduleBackgroundRefresh()
