@@ -4,16 +4,18 @@ struct WatchHomeView: View {
     @Environment(ChallengeStore.self) private var store
 
     var body: some View {
+        let daily = store.dailyContext
+        let weekly = store.weeklyStats
         NavigationStack {
             TabView {
                 // Page 1: Today
                 WatchGaugeView(
-                    stepsFraction: store.dailyStepsFraction,
-                    kmFraction: store.dailyKmFraction,
+                    stepsFraction: daily.stepsFraction,
+                    kmFraction: daily.kmFraction,
                     todaySteps: store.todaySteps,
                     todayKm: store.todayKm,
-                    goalSteps: store.dailyGoal.steps,
-                    goalKm: store.dailyGoal.km
+                    goalSteps: daily.goalSteps,
+                    goalKm: daily.goalKm
                 )
 
                 // Page 2: Hourly chart
@@ -25,10 +27,10 @@ struct WatchHomeView: View {
                 // Page 3: This week
                 ActivityPageView(config: ActivityPageConfig(
                     label: "Week",
-                    stepsFraction: store.weeklyStepsFraction,
-                    kmFraction: store.weeklyKmFraction,
-                    steps: store.weeklySteps,
-                    km: store.weeklyKm,
+                    stepsFraction: weekly.stepsFraction,
+                    kmFraction: weekly.kmFraction,
+                    steps: weekly.steps,
+                    km: weekly.km,
                     goalSteps: Int(ProgressCalculator.stepGoal),
                     goalKm: ProgressCalculator.kmGoal
                 ))

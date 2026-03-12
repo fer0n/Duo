@@ -6,17 +6,21 @@ struct WeeklyGridView: View {
     let startWeekday: Int
 
     private let daySymbols = ["S", "M", "T", "W", "T", "F", "S"]
+    private let weekDates: [Date]
+    private let entryByKey: [String: DailyEntry]
 
-    private var weekDates: [Date] {
+    init(entries: [DailyEntry], startWeekday: Int) {
+        self.entries = entries
+        self.startWeekday = startWeekday
         let weekStart = Calendar.current.currentWeekStart(startingOn: startWeekday)
-        return (0..<7).compactMap {
+        self.weekDates = (0..<7).compactMap {
             Calendar.current.date(byAdding: .day, value: $0, to: weekStart)
         }
+        self.entryByKey = Dictionary(uniqueKeysWithValues: entries.map { ($0.id, $0) })
     }
 
     private func entry(for date: Date) -> DailyEntry? {
-        let key = DateFormatter.dayKey.string(from: date)
-        return entries.first { $0.id == key }
+        entryByKey[DateFormatter.dayKey.string(from: date)]
     }
 
     private func color(for entry: DailyEntry?) -> Color {

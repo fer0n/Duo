@@ -6,6 +6,8 @@ struct HomeView: View {
     @Environment(ChallengeStore.self) private var store
 
     var body: some View {
+        let daily = store.dailyContext
+        let weekly = store.weeklyStats
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
@@ -13,32 +15,32 @@ struct HomeView: View {
                     StatCard {
                         CardHeader("Today")
                         ActivityRow(
-                            fraction: store.dailyStepsFraction,
+                            fraction: daily.stepsFraction,
                             systemImage: "figure.run",
                             value: store.todaySteps.formatted(),
-                            goal: "\(store.dailyGoal.steps.formatted()) steps",
-                            secondaryFraction: store.dailyStepsFraction + store.dailyKmFraction
+                            goal: "\(daily.goalSteps.formatted()) steps",
+                            secondaryFraction: daily.stepsFraction + daily.kmFraction
                         )
                         ActivityRow(
-                            fraction: store.dailyKmFraction,
+                            fraction: daily.kmFraction,
                             systemImage: "figure.outdoor.cycle",
                             value: String(format: "%.1f", store.todayKm),
-                            goal: String(format: "%.1f km", store.dailyGoal.km),
-                            secondaryFraction: store.dailyStepsFraction + store.dailyKmFraction
+                            goal: String(format: "%.1f km", daily.goalKm),
+                            secondaryFraction: daily.stepsFraction + daily.kmFraction
                         )
                         ArcProgressBar(
-                            stepsFraction: store.dailyStepsFraction,
-                            kmFraction: store.dailyKmFraction,
+                            stepsFraction: daily.stepsFraction,
+                            kmFraction: daily.kmFraction,
                             kmColor: bikeColor
                         ) {
-                            ProgressLabel("Today", fraction: store.dailyStepsFraction + store.dailyKmFraction)
+                            ProgressLabel("Today", fraction: daily.stepsFraction + daily.kmFraction)
                         }
                         ArcProgressBar(
-                            stepsFraction: store.weeklyStepsFraction,
-                            kmFraction: store.weeklyKmFraction,
+                            stepsFraction: weekly.stepsFraction,
+                            kmFraction: weekly.kmFraction,
                             kmColor: bikeColor
                         ) {
-                            ProgressLabel("Week", fraction: store.weeklyProgress)
+                            ProgressLabel("Week", fraction: weekly.progress)
                         }
                     }
 
@@ -46,25 +48,25 @@ struct HomeView: View {
                     StatCard {
                         CardHeader("This Week")
                         ActivityRow(
-                            fraction: store.weeklyStepsFraction,
+                            fraction: weekly.stepsFraction,
                             systemImage: "figure.run",
-                            value: store.weeklySteps.formatted(),
+                            value: weekly.steps.formatted(),
                             goal: "\(Int(ProgressCalculator.stepGoal).formatted()) steps",
-                            secondaryFraction: store.weeklyStepsFraction + store.weeklyKmFraction
+                            secondaryFraction: weekly.stepsFraction + weekly.kmFraction
                         )
                         ActivityRow(
-                            fraction: store.weeklyKmFraction,
+                            fraction: weekly.kmFraction,
                             systemImage: "figure.outdoor.cycle",
-                            value: String(format: "%.1f", store.weeklyKm),
+                            value: String(format: "%.1f", weekly.km),
                             goal: String(format: "%.1f km", ProgressCalculator.kmGoal),
-                            secondaryFraction: store.weeklyStepsFraction + store.weeklyKmFraction
+                            secondaryFraction: weekly.stepsFraction + weekly.kmFraction
                         )
                         ArcProgressBar(
-                            stepsFraction: store.weeklyStepsFraction,
-                            kmFraction: store.weeklyKmFraction,
+                            stepsFraction: weekly.stepsFraction,
+                            kmFraction: weekly.kmFraction,
                             kmColor: bikeColor
                         ) {
-                            ProgressLabel("Combined", fraction: store.weeklyProgress)
+                            ProgressLabel("Combined", fraction: weekly.progress)
                         }
                         HStack {
                             Spacer()
@@ -85,7 +87,7 @@ struct HomeView: View {
                     StatCard {
                         CardHeader("Week Overview")
                         WeeklyGridView(
-                            entries: store.currentWeekEntries(),
+                            entries: weekly.entries,
                             startWeekday: store.settings.challengeStartWeekday
                         )
                         .frame(maxWidth: .infinity)

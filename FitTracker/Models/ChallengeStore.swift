@@ -3,6 +3,15 @@ import Observation
 import WidgetKit
 import SwiftUI
 
+struct WeeklyStats {
+    let entries: [DailyEntry]
+    let steps: Int
+    let km: Double
+    let stepsFraction: Double
+    let kmFraction: Double
+    let progress: Double
+}
+
 struct HourlyActivity: Identifiable {
     let hour: Int
     let steps: Int
@@ -120,25 +129,26 @@ final class ChallengeStore {
 
     // MARK: - Weekly Data
 
-    func currentWeekEntries() -> [DailyEntry] {
+    var currentWeekEntries: [DailyEntry] {
         let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
         return entries.values.filter { $0.date >= weekStart }
     }
 
-    var weeklySteps: Int {
-        currentWeekEntries().reduce(0) { $0 + $1.steps }
+    /// All weekly stats derived from a single pass over `currentWeekEntries`.
+    /// Read this once per `body` render instead of accessing individual weekly properties separately.
+    var weeklyStats: WeeklyStats {
+        let week = currentWeekEntries
+        let steps = week.reduce(0) { $0 + $1.steps }
+        let km = week.reduce(0.0) { $0 + $1.cyclingKm }
+        return WeeklyStats(
+            entries: week,
+            steps: steps,
+            km: km,
+            stepsFraction: Double(steps) / ProgressCalculator.stepGoal,
+            kmFraction: km / ProgressCalculator.kmGoal,
+            progress: ProgressCalculator.weeklyProgress(steps: steps, km: km)
+        )
     }
-
-    var weeklyKm: Double {
-        currentWeekEntries().reduce(0.0) { $0 + $1.cyclingKm }
-    }
-
-    var weeklyProgress: Double {
-        ProgressCalculator.weeklyProgress(steps: weeklySteps, km: weeklyKm)
-    }
-
-    var weeklyStepsFraction: Double { Double(weeklySteps) / ProgressCalculator.stepGoal }
-    var weeklyKmFraction: Double { weeklyKm / ProgressCalculator.kmGoal }
 
     var remainingDays: Int {
         Calendar.current.remainingDaysInChallengeWeek(startingOn: settings.challengeStartWeekday)
@@ -149,7 +159,7 @@ final class ChallengeStore {
     var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
 
     var dailyGoal: (steps: Int, km: Double) {
-        let prev = currentWeekEntries().filter { !Calendar.current.isDateInToday($0.date) }
+        let prev = currentWeekEntries.filter { !Calendar.current.isDateInToday($0.date) }
         let prevProgress = ProgressCalculator.weeklyProgress(
             steps: prev.reduce(0) { $0 + $1.steps },
             km: prev.reduce(0.0) { $0 + $1.cyclingKm }
@@ -157,13 +167,15 @@ final class ChallengeStore {
         return ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remainingDays)
     }
 
-    var dailyStepsFraction: Double {
-        guard dailyGoal.steps > 0 else { return 0 }
-        return Double(todaySteps) / Double(dailyGoal.steps)
-    }
-
-    var dailyKmFraction: Double {
-        guard dailyGoal.km > 0 else { return 0 }
-        return todayKm / dailyGoal.km
+    /// Computes `dailyGoal` once and returns both fractions together with the goal values for display labels.
+    /// Read this once per `body` render instead of accessing `dailyStepsFraction`/`dailyKmFraction` separately.
+    var dailyContext: (stepsFraction: Double, kmFraction: Double, goalSteps: Int, goalKm: Double) {
+        let goal = dailyGoal
+        return (
+            stepsFraction: goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 0,
+            kmFraction: goal.km > 0 ? todayKm / goal.km : 0,
+            goalSteps: goal.steps,
+            goalKm: goal.km
+        )
     }
 }
