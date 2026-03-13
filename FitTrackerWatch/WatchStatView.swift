@@ -18,7 +18,7 @@ struct WatchStatView: View {
                     .padding(.vertical, -4)
                     .contentTransition(.numericText())
                 Text(goal)
-                    .font(.footnote).monospacedDigit()
+                    .font(.caption).monospacedDigit()
                     .foregroundStyle(.secondary)
                     .fontWeight(.bold)
                     .padding(.vertical, -2)
