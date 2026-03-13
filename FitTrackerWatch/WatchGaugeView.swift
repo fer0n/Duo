@@ -53,6 +53,8 @@ struct WatchGaugeView: View {
                 )
             }
             .fontWidth(.condensed)
+            .animation(.smooth(duration: 1.5), value: todaySteps)
+            .animation(.smooth(duration: 1.5), value: todayKm)
         }
         .padding(.vertical, -10)
     }

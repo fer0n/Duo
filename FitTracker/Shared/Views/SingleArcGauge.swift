@@ -63,8 +63,6 @@ struct SingleArcGauge<Content: View>: View {
             .frame(width: size, height: size)
             .frame(width: geo.size.width, height: geo.size.height)
         }
-        .animation(.smooth(duration: 2), value: fraction)
-        .animation(.smooth(duration: 2), value: secondaryFraction)
         .aspectRatio(1, contentMode: .fit)
     }
 }

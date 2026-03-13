@@ -91,8 +91,14 @@ final class HealthKitManager {
         guard Self.isAvailable else { return }
         for type in [HKQuantityType(.stepCount), HKQuantityType(.distanceCycling)] {
             let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completionHandler, error in
-                guard error == nil else { return }
-                onChange(completionHandler)
+                guard error == nil else {
+                    completionHandler()
+                    return
+                }
+
+                onChange {
+                    completionHandler()
+                }
             }
             healthStore.execute(query)
         }
@@ -147,13 +153,8 @@ final class HealthKitManager {
 
     // MARK: - Helpers
 
-    private static let dayKeyFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
-
     static func dateKey(_ date: Date) -> String {
-        dayKeyFormatter.string(from: date)
+        let c = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", c.year!, c.month!, c.day!)
     }
 }
