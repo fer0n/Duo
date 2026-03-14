@@ -31,8 +31,9 @@ struct ActivityRow: View {
                     .contentTransition(.numericText())
 
                 Text(goal)
-                    .font(.footnote).monospacedDigit()
+                    .font(.caption).monospacedDigit()
                     .foregroundStyle(.secondary)
+                    .padding(.vertical, -2)
             }
             .fontWeight(.bold)
         }

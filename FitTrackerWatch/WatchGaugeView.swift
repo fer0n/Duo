@@ -48,8 +48,8 @@ struct WatchGaugeView: View {
                     .frame(minWidth: 5, maxWidth: 8)
                 WatchStatView(
                     systemImage: "figure.outdoor.cycle",
-                    value: todayKm.formatted(),
-                    goal: goalKm.formatted()
+                    value: todayKm.kmFormatted,
+                    goal: goalKm.kmFormatted
                 )
             }
             .fontWidth(.condensed)

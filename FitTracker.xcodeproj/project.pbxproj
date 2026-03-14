@@ -92,6 +92,7 @@
 			membershipExceptions = (
 				Models/ChallengeStore.swift,
 				"Shared/Extensions/Date+Challenge.swift",
+				"Shared/Extensions/Double+Format.swift",
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/DailyEntry.swift,
 				Shared/Models/HealthKitManager.swift,

@@ -28,13 +28,11 @@ struct AccessoryCornerView: View {
         if entry.todaySteps == 0 { return String(format: "%.1f km", entry.todayKm) }
         if entry.todayKm == 0 { return entry.todaySteps.formatted() }
         let stepsK = String(format: "%.1f", Double(entry.todaySteps) / 1000)
-        return "\(stepsK)k + \(km)"
+        return "\(stepsK)k+\(km)"
     }
 
     var body: some View {
         Text(curvedText)
-            .font(.caption2)
-            .minimumScaleFactor(0.7)
             .widgetCurvesContent()
             .widgetLabel {
                 if weeklyDone {

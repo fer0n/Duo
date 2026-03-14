@@ -17,6 +17,7 @@ struct HourlyActivity: Identifiable {
     let steps: Int
     let km: Double
     var id: Int { hour }
+    var date: Date { Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: .now) ?? .now }
     var units: Double { ProgressCalculator.weeklyProgressRaw(steps: steps, km: km) }
 }
 

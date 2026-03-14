@@ -41,8 +41,8 @@ struct ActivityPageView: View {
             ActivityRow(
                 fraction: config.kmFraction,
                 systemImage: "figure.outdoor.cycle",
-                value: String(format: "%.1f", config.km),
-                goal: String(format: "%.1f km", config.goalKm),
+                value: config.km.kmFormatted,
+                goal: "\(config.goalKm.kmFormatted) km",
                 secondaryFraction: config.stepsFraction + config.kmFraction
             )
         }

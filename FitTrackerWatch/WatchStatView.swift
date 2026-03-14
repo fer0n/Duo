@@ -21,7 +21,7 @@ struct WatchStatView: View {
                     .font(.caption).monospacedDigit()
                     .foregroundStyle(.secondary)
                     .fontWeight(.bold)
-                    .padding(.vertical, -2)
+                    .padding(.vertical, -3)
             }
             .lineLimit(1)
         }
