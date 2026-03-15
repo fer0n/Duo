@@ -25,7 +25,7 @@ struct WatchHomeView: View {
                     .navigationTitle("Hourly")
 
                 // Page 3: Weekly bar chart
-                WatchWeeklyChartView()
+                WatchDailyChartView()
 
                 // Page 4: This week
                 ActivityPageView(config: ActivityPageConfig(

@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-struct WatchWeeklyChartView: View {
+struct WatchDailyChartView: View {
     @Environment(ChallengeStore.self) private var store
 
     private struct DayData: Identifiable {
@@ -172,27 +172,33 @@ struct WatchWeeklyChartView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
-                HStack {
-                    HStack(alignment: .center, spacing: 1) {
-                        Image(systemName: "figure.run")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                        Text("\(m.projSteps)")
+                VStack(spacing: 0) {
+                    HStack {
+                        HStack(alignment: .center, spacing: 1) {
+                            Image(systemName: "figure.run")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                            Text("\(m.projSteps)")
+                        }
+                        Spacer()
+                            .frame(minWidth: 5, maxWidth: 8)
+                        HStack(alignment: .center, spacing: 1) {
+                            Image(systemName: "figure.outdoor.cycle")
+                                .foregroundStyle(.secondary)
+                                .font(.caption)
+                            Text(m.projKm.kmFormatted)
+                        }
                     }
-                    Spacer()
-                        .frame(minWidth: 5, maxWidth: 8)
-                    HStack(alignment: .center, spacing: 1) {
-                        Image(systemName: "figure.outdoor.cycle")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                        Text(m.projKm.kmFormatted)
-                    }
+                    .font(.title3).monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .fontWeight(.black)
+                    .fontWidth(.condensed)
+                    
+                    Text("Left per day")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
-                .font(.title3).monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .fontWeight(.black)
-                .fontWidth(.condensed)
             }
         }
         .navigationTitle("Daily")
@@ -223,6 +229,6 @@ struct WatchWeeklyChartView: View {
         store.entries[key] = DailyEntry(id: key, steps: samples[i].steps, cyclingKm: samples[i].km, date: date)
     }
 
-    return WatchWeeklyChartView()
+    return WatchDailyChartView()
         .environment(store)
 }
