@@ -28,8 +28,8 @@ extension ChallengeStore {
         let fmt = DateFormatter()
         fmt.dateFormat = "yyyy-MM-dd"
         let pastDays: [(steps: Int, km: Double)] = [
-            (8_500, 4.2), (6_200, 2.8), (9_100, 5.5),
-            (5_800, 3.1), (7_400, 0.0), (4_300, 6.0)
+            (8_500, 1.3), (6_200, 1.3), (9_100, 0),
+            (100, 3.1), (7_400, 0.0), (4_300, 6.0)
         ]
         let todayStart = cal.startOfDay(for: .now)
         let todayKey = Date.todayKey()

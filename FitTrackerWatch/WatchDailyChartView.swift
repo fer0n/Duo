@@ -110,7 +110,7 @@ struct WatchDailyChartView: View {
             m.days.map(\.goalLine).max() ?? 0
         )
 
-        VStack(spacing: 8) {
+        VStack(spacing: 5) {
             Chart {
                 // Total bar (steps + km) in km color — drawn first, behind.
                 ForEach(m.days) { day in
@@ -172,36 +172,30 @@ struct WatchDailyChartView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
-                VStack(spacing: 0) {
-                    HStack {
-                        HStack(alignment: .center, spacing: 1) {
-                            Image(systemName: "figure.run")
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                            Text("\(m.projSteps)")
-                        }
-                        Spacer()
-                            .frame(minWidth: 5, maxWidth: 8)
-                        HStack(alignment: .center, spacing: 1) {
-                            Image(systemName: "figure.outdoor.cycle")
-                                .foregroundStyle(.secondary)
-                                .font(.caption)
-                            Text(m.projKm.kmFormatted)
-                        }
+                HStack {
+                    HStack(alignment: .center, spacing: 1) {
+                        Image(systemName: "figure.run")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                        Text("\(m.projSteps)")
                     }
-                    .font(.title3).monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                    .fontWeight(.black)
-                    .fontWidth(.condensed)
-
-                    Text("Left per day")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    Spacer()
+                        .frame(minWidth: 5, maxWidth: 8)
+                    HStack(alignment: .center, spacing: 1) {
+                        Image(systemName: "figure.outdoor.cycle")
+                            .foregroundStyle(.secondary)
+                            .font(.caption)
+                        Text(m.projKm.kmFormatted)
+                    }
                 }
+                .font(.title3).monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .fontWeight(.black)
+                .fontWidth(.condensed)
             }
         }
-        .navigationTitle("Daily")
+        .navigationTitle(m.hasFutureDays ? "Left / day" : "Daily")
         .padding(.horizontal, 12)
     }
 }
