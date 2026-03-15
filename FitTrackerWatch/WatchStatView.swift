@@ -27,3 +27,7 @@ struct WatchStatView: View {
         }
     }
 }
+
+#Preview {
+    WatchStatView(systemImage: "figure.run", value: "4,200", goal: "10,000")
+}

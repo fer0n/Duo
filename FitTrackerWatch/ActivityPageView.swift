@@ -50,3 +50,23 @@ struct ActivityPageView: View {
         .padding()
     }
 }
+
+#Preview {
+    let store = ChallengeStore.preview()
+    let weekly = store.weeklyStats
+    NavigationStack {
+        TabView {
+            ActivityPageView(config: ActivityPageConfig(
+                label: "Week",
+                stepsFraction: weekly.stepsFraction,
+                kmFraction: weekly.kmFraction,
+                steps: weekly.steps,
+                km: weekly.km,
+                goalSteps: Int(ProgressCalculator.stepGoal),
+                goalKm: ProgressCalculator.kmGoal
+            ))
+        }
+        .tabViewStyle(.verticalPage)
+    }
+    .environment(store)
+}

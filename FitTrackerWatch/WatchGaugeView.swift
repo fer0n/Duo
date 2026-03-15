@@ -59,3 +59,21 @@ struct WatchGaugeView: View {
         .padding(.vertical, -12)
     }
 }
+
+#Preview {
+    let store = ChallengeStore.preview()
+    let daily = store.dailyContext
+    NavigationStack {
+        TabView {
+            WatchGaugeView(
+                stepsFraction: daily.stepsFraction,
+                kmFraction: daily.kmFraction,
+                todaySteps: store.todaySteps,
+                todayKm: store.todayKm,
+                goalSteps: daily.goalSteps,
+                goalKm: daily.goalKm
+            )
+        }
+        .tabViewStyle(.verticalPage)
+    }
+}

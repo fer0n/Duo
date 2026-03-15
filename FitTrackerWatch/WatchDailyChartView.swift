@@ -194,7 +194,7 @@ struct WatchDailyChartView: View {
                     .minimumScaleFactor(0.7)
                     .fontWeight(.black)
                     .fontWidth(.condensed)
-                    
+
                     Text("Left per day")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -207,28 +207,11 @@ struct WatchDailyChartView: View {
 }
 
 #Preview {
-    let store = ChallengeStore(skipHealthKit: true)
-    let cal = Calendar.current
-    let weekStart = cal.currentWeekStart(startingOn: store.settings.challengeStartWeekday)
-    let fmt: DateFormatter = {
-        let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f
-    }()
-
-    // Fill past days + today with sample data (all entries have both steps and km).
-    let todayStart = cal.startOfDay(for: .now)
-    let todayIndex = max(0, min(
-        cal.dateComponents([.day], from: weekStart, to: todayStart).day ?? 0, 6
-    ))
-    let samples: [(steps: Int, km: Double)] = [
-        (9_000, 5.0), (7_500, 3.5), (11_000, 2.0),
-        (4_200, 4.5), (8_000, 6.0), (6_000, 2.5), (5_000, 3.0)
-    ]
-    for i in 0...todayIndex {
-        let date = cal.date(byAdding: .day, value: i, to: weekStart) ?? weekStart
-        let key = fmt.string(from: date)
-        store.entries[key] = DailyEntry(id: key, steps: samples[i].steps, cyclingKm: samples[i].km, date: date)
+    NavigationStack {
+        TabView {
+            WatchDailyChartView()
+        }
+        .tabViewStyle(.verticalPage)
     }
-
-    return WatchDailyChartView()
-        .environment(store)
+    .environment(ChallengeStore.preview())
 }
