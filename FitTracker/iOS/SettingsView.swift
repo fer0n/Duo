@@ -21,6 +21,23 @@ struct SettingsView: View {
                     .onChange(of: store.settings.challengeStartWeekday) { store.save() }
                 }
 
+                Section("Notifications") {
+                    Toggle("Daily goal reached", isOn: $store.settings.notifyDailyGoal)
+                        .onChange(of: store.settings.notifyDailyGoal) { _, enabled in
+                            if enabled {
+                                Task { await NotificationManager.shared.requestAuthorization() }
+                            }
+                            store.save()
+                        }
+                    Toggle("Weekly goal reached", isOn: $store.settings.notifyWeeklyGoal)
+                        .onChange(of: store.settings.notifyWeeklyGoal) { _, enabled in
+                            if enabled {
+                                Task { await NotificationManager.shared.requestAuthorization() }
+                            }
+                            store.save()
+                        }
+                }
+
                 Section("Weekly Goals") {
                     LabeledContent("Steps goal", value: "60,000 steps")
                     LabeledContent("Cycling goal", value: "40 km")

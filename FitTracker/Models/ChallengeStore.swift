@@ -86,6 +86,33 @@ final class ChallengeStore {
         hasUnsavedSnapshot = true
         writeEntriesToDefaults()
         WidgetCenter.shared.reloadAllTimelines()
+        await checkGoalNotifications(weekStart: weekStart)
+    }
+
+    // MARK: - Notifications
+
+    private func checkGoalNotifications(weekStart: Date) async {
+        let notifier = NotificationManager.shared
+        let weekly = weeklyStats
+        let weeklyGoalReached = weekly.progress >= 1.0
+
+        if settings.notifyWeeklyGoal && weeklyGoalReached {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            let weekKey = formatter.string(from: weekStart)
+            await notifier.sendWeeklyGoalNotificationIfNeeded(weekStartKey: weekKey)
+        }
+
+        if settings.notifyDailyGoal && !weeklyGoalReached {
+            let goal = dailyGoal
+            if goal.steps > 0 || goal.km > 0 {
+                let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
+                let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
+                if stepsFraction + kmFraction >= 1.0 {
+                    await notifier.sendDailyGoalNotificationIfNeeded()
+                }
+            }
+        }
     }
 
     // MARK: - Persistence

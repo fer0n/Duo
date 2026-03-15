@@ -96,6 +96,7 @@
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/DailyEntry.swift,
 				Shared/Models/HealthKitManager.swift,
+				Shared/Models/NotificationManager.swift,
 				Shared/Models/ProgressCalculator.swift,
 				Shared/Views/ActivityRow.swift,
 				Shared/Views/ArcProgressBar.swift,
@@ -112,6 +113,7 @@
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/DailyEntry.swift,
 				Shared/Models/HealthKitManager.swift,
+				Shared/Models/NotificationManager.swift,
 				Shared/Models/ProgressCalculator.swift,
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
