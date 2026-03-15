@@ -103,37 +103,60 @@ struct WatchDailyChartView: View {
         return ChartModel(days: days, projSteps: projSteps, projKm: projKm, hasFutureDays: futureDaysCount > 0)
     }
 
+    private func barDisplay(_ value: Double, min minFraction: Double) -> Double {
+        value == 0 ? 0 : max(value, minFraction)
+    }
+
+    private func barGradient(value: Double, display: Double, color: Color) -> LinearGradient {
+        let clearStop = display > 0 ? max(0.0, 1.0 - value / display) : 0.0
+        return LinearGradient(
+            stops: [
+                .init(color: .clear, location: 0),
+                .init(color: .clear, location: clearStop),
+                .init(color: color, location: clearStop),
+                .init(color: color, location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
     var body: some View {
         let m = chartModel
         let maxVal = max(
             m.days.map(\.total).max() ?? 0,
             m.days.map(\.goalLine).max() ?? 0
         )
+        // Minimum height so the capsule always renders rounded corners.
+        let minBarFraction = maxVal * 0.07
 
         VStack(spacing: 5) {
             Chart {
                 // Total bar (steps + km) in km color — drawn first, behind.
                 ForEach(m.days) { day in
+                    let display = day.isFuture ? 0.0 : barDisplay(day.total, min: minBarFraction)
+                    let color: Color = day.isFuture ? .secondary.opacity(0.15) : kmBarColor
                     BarMark(
                         x: .value("Day", day.date, unit: .day),
-                        y: .value("Total", day.total),
+                        y: .value("Total", display),
                         width: .fixed(14),
                         stacking: .unstacked
                     )
                     .clipShape(.capsule)
-                    .foregroundStyle(day.isFuture ? Color.secondary.opacity(0.15) : kmBarColor)
+                    .foregroundStyle(barGradient(value: day.total, display: display, color: color))
                 }
 
                 // Steps-only bar in accent color — overlaid on top, shorter.
                 ForEach(m.days) { day in
+                    let display = day.isFuture ? 0.0 : barDisplay(day.stepsFraction, min: minBarFraction)
                     BarMark(
                         x: .value("Day", day.date, unit: .day),
-                        y: .value("Steps", day.stepsFraction),
+                        y: .value("Steps", display),
                         width: .fixed(14),
                         stacking: .unstacked
                     )
                     .clipShape(.capsule)
-                    .foregroundStyle(day.isFuture ? Color.clear : Color.accentColor)
+                    .foregroundStyle(barGradient(value: day.stepsFraction, display: display, color: .accentColor))
                 }
 
                 // Dashed goal line: retroactive for past days, projected for future days.
