@@ -7,10 +7,7 @@ struct WatchGaugeView: View {
     let todayKm: Double
     let goalSteps: Int
     let goalKm: Double
-
-    private var isGoalReached: Bool {
-        stepsFraction + kmFraction >= 1.0
-    }
+    let isWeeklyGoalReached: Bool
 
     private var goalFraction: Double {
         min(stepsFraction + kmFraction, 1.0)
@@ -20,7 +17,7 @@ struct WatchGaugeView: View {
         VStack(alignment: .center, spacing: 12) {
             SingleArcGauge(fraction: stepsFraction, secondaryFraction: kmFraction + stepsFraction) { size in
                 ZStack {
-                    if isGoalReached {
+                    if isWeeklyGoalReached {
                         Image(systemName: "checkmark")
                             .font(.system(size: size * 0.25, weight: .black))
                             .foregroundStyle(Color.accentColor.gradient)
@@ -37,7 +34,7 @@ struct WatchGaugeView: View {
                     }
                 }
             }
-            .animation(.smooth.speed(0.4), value: isGoalReached)
+            .animation(.smooth.speed(0.4), value: isWeeklyGoalReached)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             HStack(spacing: 0) {
@@ -79,7 +76,8 @@ struct WatchGaugeView: View {
                 todaySteps: store.todaySteps,
                 todayKm: store.todayKm,
                 goalSteps: daily.goalSteps,
-                goalKm: daily.goalKm
+                goalKm: daily.goalKm,
+                isWeeklyGoalReached: store.weeklyStats.progress >= 1.0
             )
         }
         .tabViewStyle(.verticalPage)

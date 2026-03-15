@@ -15,7 +15,8 @@ struct WatchHomeView: View {
                     todaySteps: store.todaySteps,
                     todayKm: store.todayKm,
                     goalSteps: daily.goalSteps,
-                    goalKm: daily.goalKm
+                    goalKm: daily.goalKm,
+                    isWeeklyGoalReached: weekly.progress >= 1.0
                 )
 
                 // Page 2: Hourly chart
