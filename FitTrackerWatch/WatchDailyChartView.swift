@@ -23,6 +23,8 @@ struct WatchDailyChartView: View {
         let hasFutureDays: Bool
     }
 
+    @State private var displayDays: [DayData] = []
+
     // All calculation lives here, out of body.
     private var chartModel: ChartModel {
         let cal = Calendar.current
@@ -133,7 +135,7 @@ struct WatchDailyChartView: View {
         VStack(spacing: 5) {
             Chart {
                 // Total bar (steps + km) in km color — drawn first, behind.
-                ForEach(m.days) { day in
+                ForEach(displayDays) { day in
                     let display = day.isFuture ? 0.0 : barDisplay(day.total, min: minBarFraction)
                     let color: Color = day.isFuture ? .secondary.opacity(0.15) : kmBarColor
                     BarMark(
@@ -147,7 +149,7 @@ struct WatchDailyChartView: View {
                 }
 
                 // Steps-only bar in accent color — overlaid on top, shorter.
-                ForEach(m.days) { day in
+                ForEach(displayDays) { day in
                     let display = day.isFuture ? 0.0 : barDisplay(day.stepsFraction, min: minBarFraction)
                     BarMark(
                         x: .value("Day", day.date, unit: .day),
@@ -160,7 +162,7 @@ struct WatchDailyChartView: View {
                 }
 
                 // Dashed goal line: retroactive for past days, projected for future days.
-                ForEach(m.days) { day in
+                ForEach(displayDays) { day in
                     LineMark(
                         x: .value("Day", day.date, unit: .day),
                         y: .value("Goal", day.goalLine)
@@ -220,6 +222,14 @@ struct WatchDailyChartView: View {
         }
         .navigationTitle(m.hasFutureDays ? "Left / day" : "Daily")
         .padding(.horizontal, 12)
+        .onAppear {
+            let days = m.days
+            withAnimation(.smooth(duration: 1.0)) { displayDays = days }
+        }
+        .onChange(of: store.todaySteps) { _, _ in
+            let days = chartModel.days
+            withAnimation(.smooth(duration: 1.0)) { displayDays = days }
+        }
     }
 }
 

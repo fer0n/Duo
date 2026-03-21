@@ -12,7 +12,7 @@ struct WeeklyStats {
     let progress: Double
 }
 
-struct HourlyActivity: Identifiable {
+struct HourlyActivity: Identifiable, Equatable {
     let hour: Int
     let steps: Int
     let km: Double
@@ -76,7 +76,6 @@ final class ChallengeStore {
         let animation: Animation = isFirst
             ? .smooth(duration: 1.5).delay(2)
             : .smooth(duration: 1.5)
-        if isFirst { entries = [:] }   // reset to zero so the reveal animation always plays
         withAnimation(animation) {
             if entriesChanged || isFirst { entries = merged }
             hourlyActivity = newHourlyActivity

@@ -16,13 +16,27 @@ struct ActivityPageConfig {
 struct ActivityPageView: View {
     let config: ActivityPageConfig
 
+    private struct DisplayState: Equatable {
+        var stepsFraction: Double = 0
+        var kmFraction: Double = 0
+        var steps: Int = 0
+        var km: Double = 0
+    }
+
+    @State private var display = DisplayState()
+
+    private var current: DisplayState {
+        DisplayState(stepsFraction: config.stepsFraction, kmFraction: config.kmFraction,
+                     steps: config.steps, km: config.km)
+    }
+
     var body: some View {
         VStack(spacing: 10) {
-            ArcProgressBar(stepsFraction: config.stepsFraction, kmFraction: config.kmFraction, kmColor: bikeColor) {
+            ArcProgressBar(stepsFraction: display.stepsFraction, kmFraction: display.kmFraction, kmColor: bikeColor) {
                 HStack {
                     Text(config.label)
                     Spacer()
-                    Text(String(format: "%.1f%%", (config.stepsFraction + config.kmFraction) * 100))
+                    Text(String(format: "%.1f%%", (display.stepsFraction + display.kmFraction) * 100))
                         .monospacedDigit()
                         .contentTransition(.numericText())
 
@@ -31,23 +45,29 @@ struct ActivityPageView: View {
             .padding(.bottom, 5)
 
             ActivityRow(
-                fraction: config.stepsFraction,
+                fraction: display.stepsFraction,
                 systemImage: "figure.run",
-                value: config.steps.formatted(),
+                value: display.steps.formatted(),
                 goal: "\(config.goalSteps.formatted()) steps",
-                secondaryFraction: config.stepsFraction + config.kmFraction
+                secondaryFraction: display.stepsFraction + display.kmFraction
             )
 
             ActivityRow(
-                fraction: config.kmFraction,
+                fraction: display.kmFraction,
                 systemImage: "figure.outdoor.cycle",
-                value: config.km.kmFormatted,
+                value: display.km.kmFormatted,
                 goal: "\(config.goalKm.kmFormatted) km",
-                secondaryFraction: config.stepsFraction + config.kmFraction
+                secondaryFraction: display.stepsFraction + display.kmFraction
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
+        .onAppear {
+            withAnimation(.smooth(duration: 1.5)) { display = current }
+        }
+        .onChange(of: current) { _, new in
+            withAnimation(.smooth(duration: 1.5)) { display = new }
+        }
     }
 }
 

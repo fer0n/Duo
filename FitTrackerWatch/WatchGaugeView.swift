@@ -9,13 +9,25 @@ struct WatchGaugeView: View {
     let goalKm: Double
     let isWeeklyGoalReached: Bool
 
-    private var goalFraction: Double {
-        stepsFraction + kmFraction
+    private struct DisplayState: Equatable {
+        var stepsFraction: Double = 0
+        var kmFraction: Double = 0
+        var steps: Int = 0
+        var km: Double = 0
+    }
+
+    @State private var display = DisplayState()
+
+    private var current: DisplayState {
+        DisplayState(stepsFraction: stepsFraction, kmFraction: kmFraction, steps: todaySteps, km: todayKm)
     }
 
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
-            SingleArcGauge(fraction: stepsFraction, secondaryFraction: kmFraction + stepsFraction) { size in
+            SingleArcGauge(
+                fraction: display.stepsFraction,
+                secondaryFraction: display.stepsFraction + display.kmFraction
+            ) { size in
                 ZStack {
                     if isWeeklyGoalReached {
                         Image(systemName: "checkmark")
@@ -23,7 +35,7 @@ struct WatchGaugeView: View {
                             .foregroundStyle(Color.accentColor.gradient)
                             .transition(.blurReplace)
                     } else {
-                        Text(Int(goalFraction * 100).formatted())
+                        Text(Int((display.stepsFraction + display.kmFraction) * 100).formatted())
                             .font(.largeTitle)
                             .monospacedDigit()
                             .fontWidth(.compressed)
@@ -40,22 +52,26 @@ struct WatchGaugeView: View {
             HStack(spacing: 0) {
                 WatchStatView(
                     systemImage: "figure.run",
-                    value: todaySteps.formatted(),
+                    value: display.steps.formatted(),
                     goal: goalSteps.formatted()
                 )
                 Spacer()
                     .frame(minWidth: 5, maxWidth: 8)
                 WatchStatView(
                     systemImage: "figure.outdoor.cycle",
-                    value: todayKm.kmFormatted,
+                    value: display.km.kmFormatted,
                     goal: goalKm.kmFormatted
                 )
             }
             .fontWidth(.condensed)
-            .animation(.smooth(duration: 1.5), value: todaySteps)
-            .animation(.smooth(duration: 1.5), value: todayKm)
         }
         .padding(.vertical, -12)
+        .onAppear {
+            withAnimation(.smooth(duration: 1.5)) { display = current }
+        }
+        .onChange(of: current) { _, new in
+            withAnimation(.smooth(duration: 1.5)) { display = new }
+        }
     }
 }
 
