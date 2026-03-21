@@ -77,12 +77,6 @@ struct SettingsView: View {
                     LabeledContent("Cycling goal", value: "40 km")
                     LabeledContent("Formula", value: "steps÷60k + km÷40 = 100%")
                 }
-
-                Section("About") {
-                    LabeledContent("TK Fit Challenge", value: "2025")
-                    // swiftlint:disable:next line_length
-                    Link("Challenge Info", destination: URL(string: "https://www.tk.de/techniker/gesundheit-foerdern/digitale-gesundheit/spezial/tk-fit/tk-fit-challenge-2077602")!)
-                }
             }
             .navigationTitle("Settings")
         }
