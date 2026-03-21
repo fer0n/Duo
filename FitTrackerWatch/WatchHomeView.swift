@@ -19,14 +19,14 @@ struct WatchHomeView: View {
                     isWeeklyGoalReached: weekly.progress >= 1.0
                 )
 
-                // Page 2: Hourly chart
+                // Page 2: Weekly bar chart
+                WatchDailyChartView()
+
+                // Page 3: Hourly chart
                 HourlyChartView(hourlyActivity: store.hourlyActivity)
                     .padding(.horizontal, 20)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .navigationTitle("Hourly")
-
-                // Page 3: Weekly bar chart
-                WatchDailyChartView()
 
                 // Page 4: This week
                 ActivityPageView(config: ActivityPageConfig(
