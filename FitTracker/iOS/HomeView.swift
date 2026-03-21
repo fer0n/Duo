@@ -97,6 +97,7 @@ struct HomeView: View {
             }
             .navigationTitle("Fit")
         }
+        .onAppear { store.markGoalsSeen() }
     }
 }
 

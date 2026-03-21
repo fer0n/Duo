@@ -27,7 +27,6 @@ final class NotificationManager {
 
         let content = UNMutableNotificationContent()
         content.title = "Daily Goal Reached!"
-        content.body = "You've hit your daily fitness target. Keep it up!"
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: "dailyGoal-\(todayKey)",
@@ -37,6 +36,18 @@ final class NotificationManager {
         try? await UNUserNotificationCenter.current().add(request)
     }
 
+    func clearDeliveredNotifications() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+
+    func markDailyGoalSeen() {
+        defaults.set(Date.todayKey(), forKey: Self.dailyNotifiedKey)
+    }
+
+    func markWeeklyGoalSeen(weekStartKey: String) {
+        defaults.set(weekStartKey, forKey: Self.weeklyNotifiedKey)
+    }
+
     func sendWeeklyGoalNotificationIfNeeded(weekStartKey: String) async {
         guard defaults.string(forKey: Self.weeklyNotifiedKey) != weekStartKey else { return }
         guard await isAuthorized() else { return }
@@ -44,7 +55,6 @@ final class NotificationManager {
 
         let content = UNMutableNotificationContent()
         content.title = "Weekly Goal Reached!"
-        content.body = "You've completed your weekly fitness challenge. Amazing work!"
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: "weeklyGoal-\(weekStartKey)",

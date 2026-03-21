@@ -17,6 +17,7 @@ struct FitTrackerWatchApp: App {
                     store.saveSessionSnapshot()
                 }
                 guard phase == .active else { return }
+                NotificationManager.shared.clearDeliveredNotifications()
                 Task { await store.refreshFromHealthKit() }
                 scheduleBackgroundRefresh()
             }

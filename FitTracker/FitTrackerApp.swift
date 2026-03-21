@@ -19,6 +19,9 @@ struct FitTrackerApp: App {
             if phase == .background {
                 store.saveSessionSnapshot()
             }
+            if phase == .active {
+                NotificationManager.shared.clearDeliveredNotifications()
+            }
         }
     }
 }

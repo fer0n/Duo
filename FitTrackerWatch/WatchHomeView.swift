@@ -41,6 +41,7 @@ struct WatchHomeView: View {
             }
             .tabViewStyle(.verticalPage)
         }
+        .onAppear { store.markGoalsSeen() }
     }
 }
 

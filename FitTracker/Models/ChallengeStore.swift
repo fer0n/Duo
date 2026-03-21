@@ -115,6 +115,30 @@ final class ChallengeStore {
         }
     }
 
+    /// Call when the user opens the app and can see goal progress.
+    /// Suppresses any pending notifications for goals that are already met.
+    func markGoalsSeen() {
+        let notifier = NotificationManager.shared
+        let weekly = weeklyStats
+        let weeklyGoalReached = weekly.progress >= 1.0
+
+        if weeklyGoalReached {
+            let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd"
+            notifier.markWeeklyGoalSeen(weekStartKey: formatter.string(from: weekStart))
+        }
+
+        let goal = dailyGoal
+        if goal.steps > 0 || goal.km > 0 {
+            let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
+            let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
+            if stepsFraction + kmFraction >= 1.0 {
+                notifier.markDailyGoalSeen()
+            }
+        }
+    }
+
     // MARK: - Persistence
 
     private func loadFromDefaults() {
