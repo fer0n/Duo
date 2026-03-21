@@ -38,6 +38,8 @@ struct WatchHomeView: View {
                     goalSteps: Int(ProgressCalculator.stepGoal),
                     goalKm: ProgressCalculator.kmGoal
                 ))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding()
             }
             .tabViewStyle(.verticalPage)
         }

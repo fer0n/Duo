@@ -98,8 +98,10 @@
 				Shared/Models/HealthKitManager.swift,
 				Shared/Models/NotificationManager.swift,
 				Shared/Models/ProgressCalculator.swift,
+				Shared/Views/ActivityPageView.swift,
 				Shared/Views/ActivityRow.swift,
 				Shared/Views/ArcProgressBar.swift,
+				Shared/Views/DailyChartView.swift,
 				Shared/Views/HourlyChartView.swift,
 				Shared/Views/SingleArcGauge.swift,
 			);

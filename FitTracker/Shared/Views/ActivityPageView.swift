@@ -1,7 +1,5 @@
 import SwiftUI
 
-private let bikeColor = Color.accentColor.mix(with: .black, by: 0.2)
-
 struct ActivityPageConfig {
     var label: String
     var stepsFraction: Double
@@ -32,14 +30,13 @@ struct ActivityPageView: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            ArcProgressBar(stepsFraction: display.stepsFraction, kmFraction: display.kmFraction, kmColor: bikeColor) {
+            ArcProgressBar(stepsFraction: display.stepsFraction, kmFraction: display.kmFraction, kmColor: kmBarColor) {
                 HStack {
                     Text(config.label)
                     Spacer()
                     Text(String(format: "%.1f%%", (display.stepsFraction + display.kmFraction) * 100))
                         .monospacedDigit()
                         .contentTransition(.numericText())
-
                 }
             }
             .padding(.bottom, 5)
@@ -60,8 +57,6 @@ struct ActivityPageView: View {
                 secondaryFraction: display.stepsFraction + display.kmFraction
             )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
         .onAppear {
             withAnimation(.smooth(duration: 1.5)) { display = current }
         }
@@ -69,24 +64,4 @@ struct ActivityPageView: View {
             withAnimation(.smooth(duration: 1.5)) { display = new }
         }
     }
-}
-
-#Preview {
-    let store = ChallengeStore.preview()
-    let weekly = store.weeklyStats
-    NavigationStack {
-        TabView {
-            ActivityPageView(config: ActivityPageConfig(
-                label: "Week",
-                stepsFraction: weekly.stepsFraction,
-                kmFraction: weekly.kmFraction,
-                steps: weekly.steps,
-                km: weekly.km,
-                goalSteps: Int(ProgressCalculator.stepGoal),
-                goalKm: ProgressCalculator.kmGoal
-            ))
-        }
-        .tabViewStyle(.verticalPage)
-    }
-    .environment(store)
 }
