@@ -10,7 +10,7 @@ struct WatchGaugeView: View {
     let isWeeklyGoalReached: Bool
 
     private var goalFraction: Double {
-        min(stepsFraction + kmFraction, 1.0)
+        stepsFraction + kmFraction
     }
 
     var body: some View {

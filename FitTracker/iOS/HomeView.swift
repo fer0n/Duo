@@ -126,7 +126,7 @@ private struct ProgressLabel: View {
         HStack {
             Text(title)
             Spacer()
-            Text(String(format: "%.1f%%", min(fraction, 1) * 100))
+            Text(String(format: "%.1f%%", fraction * 100))
         }
     }
 }
