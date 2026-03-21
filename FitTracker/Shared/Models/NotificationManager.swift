@@ -9,6 +9,8 @@ final class NotificationManager {
     private static let appGroupID = "group.com.pentlandFirth.FitTracker"
     private static let dailyNotifiedKey = "lastDailyGoalNotificationDay"
     private static let weeklyNotifiedKey = "lastWeeklyGoalNotificationWeekStart"
+    private static let dailyReminderScheduledKey = "dailyReminderScheduledDay"
+    private static let dailyReminderIdentifier = "dailyGoalReminder"
 
     private init() {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
@@ -62,6 +64,50 @@ final class NotificationManager {
             trigger: nil
         )
         try? await UNUserNotificationCenter.current().add(request)
+    }
+
+    func scheduleDailyReminderIfNeeded(
+        hour: Int,
+        minute: Int,
+        missingPercent: Int,
+        missingSteps: Int,
+        missingKm: Double
+    ) async {
+        let todayKey = Date.todayKey()
+        guard defaults.string(forKey: Self.dailyReminderScheduledKey) != todayKey else { return }
+        guard await isAuthorized() else { return }
+
+        var components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        components.hour = hour
+        components.minute = minute
+        components.second = 0
+        guard let reminderDate = Calendar.current.date(from: components), reminderDate > .now else { return }
+
+        defaults.set(todayKey, forKey: Self.dailyReminderScheduledKey)
+
+        let kmFormatted = String(format: "%.1f", missingKm)
+        let content = UNMutableNotificationContent()
+        content.title = "Daily Goal: \(missingPercent)% to Go"
+        content.body = "That's \(missingSteps.formatted()) steps or \(kmFormatted) km"
+        content.sound = .default
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: DateComponents(hour: hour, minute: minute),
+            repeats: false
+        )
+        let request = UNNotificationRequest(
+            identifier: Self.dailyReminderIdentifier,
+            content: content,
+            trigger: trigger
+        )
+        try? await UNUserNotificationCenter.current().add(request)
+    }
+
+    func cancelDailyReminder() {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [Self.dailyReminderIdentifier]
+        )
+        defaults.removeObject(forKey: Self.dailyReminderScheduledKey)
     }
 
     private func isAuthorized() async -> Bool {

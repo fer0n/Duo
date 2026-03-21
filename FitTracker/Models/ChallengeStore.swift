@@ -102,14 +102,30 @@ final class ChallengeStore {
             await notifier.sendWeeklyGoalNotificationIfNeeded(weekStartKey: weekKey)
         }
 
-        if settings.notifyDailyGoal && !weeklyGoalReached {
-            let goal = dailyGoal
-            if goal.steps > 0 || goal.km > 0 {
-                let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
-                let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
-                if stepsFraction + kmFraction >= 1.0 {
-                    await notifier.sendDailyGoalNotificationIfNeeded()
-                }
+        let goal = dailyGoal
+        let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
+        let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
+        let combinedProgress = stepsFraction + kmFraction
+        let dailyGoalReached = (goal.steps > 0 || goal.km > 0) && combinedProgress >= 1.0
+
+        if settings.notifyDailyGoal && !weeklyGoalReached && dailyGoalReached {
+            await notifier.sendDailyGoalNotificationIfNeeded()
+        }
+
+        if settings.dailyReminderEnabled {
+            if dailyGoalReached || weeklyGoalReached {
+                notifier.cancelDailyReminder()
+            } else {
+                let missingFraction = max(0.0, 1.0 - combinedProgress)
+                let missingSteps = Int((missingFraction * Double(goal.steps)).rounded())
+                let missingKm = missingFraction * goal.km
+                await notifier.scheduleDailyReminderIfNeeded(
+                    hour: settings.dailyReminderHour,
+                    minute: settings.dailyReminderMinute,
+                    missingPercent: Int((missingFraction * 100).rounded()),
+                    missingSteps: missingSteps,
+                    missingKm: missingKm
+                )
             }
         }
     }
@@ -168,6 +184,8 @@ final class ChallengeStore {
         if let data = try? JSONEncoder().encode(settings) {
             defaults.set(data, forKey: Self.settingsKey)
         }
+        // Cancel any pending reminder so checkGoalNotifications can reschedule with updated settings.
+        NotificationManager.shared.cancelDailyReminder()
         Task { await refreshFromHealthKit() }
         WidgetCenter.shared.reloadAllTimelines()
     }
