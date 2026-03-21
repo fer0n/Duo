@@ -20,22 +20,24 @@ struct WatchGaugeView: View {
         VStack(alignment: .center, spacing: 12) {
             SingleArcGauge(fraction: stepsFraction, secondaryFraction: kmFraction + stepsFraction) { size in
                 ZStack {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: size * 0.25, weight: .black))
-                        .scaleEffect(isGoalReached ? 1 : 0.3)
-                        .opacity(isGoalReached ? 1 : 0)
-                        .animation(.smooth, value: isGoalReached)
-
-                    Text(Int(goalFraction * 100).formatted())
-                        .font(.largeTitle)
-                        .monospacedDigit()
-                        .contentTransition(.numericText())
-                        .opacity(isGoalReached ? 0 : 1)
-                        .fontWidth(.compressed)
-                        .fontWeight(.black)
+                    if isGoalReached {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: size * 0.25, weight: .black))
+                            .foregroundStyle(Color.accentColor.gradient)
+                            .transition(.blurReplace)
+                    } else {
+                        Text(Int(goalFraction * 100).formatted())
+                            .font(.largeTitle)
+                            .monospacedDigit()
+                            .fontWidth(.compressed)
+                            .fontWeight(.black)
+                            .foregroundStyle(Color.accentColor.gradient)
+                            .contentTransition(.numericText())
+                            .transition(.blurReplace)
+                    }
                 }
-                .foregroundStyle(Color.accentColor.gradient)
             }
+            .animation(.smooth.speed(0.4), value: isGoalReached)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             HStack(spacing: 0) {
@@ -61,8 +63,14 @@ struct WatchGaugeView: View {
 }
 
 #Preview {
-    let store = ChallengeStore.preview()
+    @Previewable @State var scenarioIndex = 0
+    @Previewable @State var store = ChallengeStore.preview(
+        steps: ChallengeStore.previewDoneScenarios[0].steps,
+        km: ChallengeStore.previewDoneScenarios[0].km
+    )
+    let todayKey = Date.todayKey()
     let daily = store.dailyContext
+
     NavigationStack {
         TabView {
             WatchGaugeView(
@@ -75,5 +83,24 @@ struct WatchGaugeView: View {
             )
         }
         .tabViewStyle(.verticalPage)
+    }
+    .task(id: scenarioIndex) {
+        let s = ChallengeStore.previewDoneScenarios[scenarioIndex]
+        withAnimation(.smooth) {
+            store.entries[todayKey] = DailyEntry(id: todayKey, steps: s.steps, cyclingKm: s.km, date: .now)
+        }
+    }
+    .overlay(alignment: .top) {
+        Button {
+            scenarioIndex = (scenarioIndex + 1) % ChallengeStore.previewDoneScenarios.count
+        } label: {
+            Text("\(scenarioIndex + 1)/\(ChallengeStore.previewDoneScenarios.count)")
+                .font(.system(size: 9, weight: .bold))
+                .padding(4)
+                .background(.ultraThinMaterial, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .padding(.top, -40)
+        .padding(.bottom, 2)
     }
 }

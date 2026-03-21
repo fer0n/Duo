@@ -13,6 +13,12 @@ extension ChallengeStore {
         (22_000, 40.0)
     ]
 
+    /// Scenarios for cycling through today's step/km values in previews.
+    static let previewDoneScenarios: [(steps: Int, km: Double)] = [
+        (0, 0),
+        (63_000, 0)
+    ]
+
     /// Returns a store pre-populated with realistic mock data for SwiftUI previews.
     static func preview(steps: Int = 4_200, km: Double = 2.6) -> ChallengeStore {
         let store = ChallengeStore(skipHealthKit: true)
