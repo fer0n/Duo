@@ -9,7 +9,6 @@ final class NotificationManager {
     private static let appGroupID = "group.com.pentlandFirth.FitTracker"
     private static let dailyNotifiedKey = "lastDailyGoalNotificationDay"
     private static let weeklyNotifiedKey = "lastWeeklyGoalNotificationWeekStart"
-    private static let dailyReminderScheduledKey = "dailyReminderScheduledDay"
     private static let dailyReminderIdentifier = "dailyGoalReminder"
 
     private init() {
@@ -73,8 +72,6 @@ final class NotificationManager {
         missingSteps: Int,
         missingKm: Double
     ) async {
-        let todayKey = Date.todayKey()
-        guard defaults.string(forKey: Self.dailyReminderScheduledKey) != todayKey else { return }
         guard await isAuthorized() else { return }
 
         var components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
@@ -82,8 +79,6 @@ final class NotificationManager {
         components.minute = minute
         components.second = 0
         guard let reminderDate = Calendar.current.date(from: components), reminderDate > .now else { return }
-
-        defaults.set(todayKey, forKey: Self.dailyReminderScheduledKey)
 
         let kmFormatted = String(format: "%.1f", missingKm)
         let content = UNMutableNotificationContent()
@@ -107,7 +102,6 @@ final class NotificationManager {
         UNUserNotificationCenter.current().removePendingNotificationRequests(
             withIdentifiers: [Self.dailyReminderIdentifier]
         )
-        defaults.removeObject(forKey: Self.dailyReminderScheduledKey)
     }
 
     private func isAuthorized() async -> Bool {
