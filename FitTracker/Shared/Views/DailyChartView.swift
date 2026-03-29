@@ -21,6 +21,7 @@ struct DailyChartView: View {
         let projSteps: Int
         let projKm: Double
         let hasFutureDays: Bool
+        let goalChangePct: Double?
     }
 
     @State private var displayDays: [DayData] = []
@@ -56,6 +57,12 @@ struct DailyChartView: View {
         let projectedFraction: Double = futureDaysCount > 0
             ? max(1.0 - progressThroughToday, 0.0) / Double(futureDaysCount)
             : 0.0
+        let todayGoalFraction: Double = futureDaysCount > 0
+            ? max(1.0 - progressBeforeToday, 0.0) / Double(futureDaysCount + 1)
+            : 0.0
+        let goalChangePct: Double? = todayGoalFraction > 0
+            ? (projectedFraction - todayGoalFraction) / todayGoalFraction * 100
+            : nil
 
         var days: [DayData] = []
         var cumulative = 0.0
@@ -96,7 +103,13 @@ struct DailyChartView: View {
             if !isFuture { cumulative += stepsFraction + kmFraction }
         }
 
-        return ChartModel(days: days, projSteps: projSteps, projKm: projKm, hasFutureDays: futureDaysCount > 0)
+        return ChartModel(
+            days: days,
+            projSteps: projSteps,
+            projKm: projKm,
+            hasFutureDays: futureDaysCount > 0,
+            goalChangePct: goalChangePct
+        )
     }
 
     private func barDisplay(_ value: Double, min minFraction: Double) -> Double {
@@ -195,7 +208,7 @@ struct DailyChartView: View {
                         Text("\(m.projSteps)")
                     }
                     Spacer()
-                        .frame(minWidth: 5, maxWidth: 8)
+                        .frame(minWidth: 4, maxWidth: 8)
                     HStack(alignment: .center, spacing: 1) {
                         Image(systemName: "figure.outdoor.cycle")
                             .foregroundStyle(.secondary)
@@ -210,7 +223,15 @@ struct DailyChartView: View {
                 .fontWidth(.condensed)
             }
         }
-        .navigationTitle(m.hasFutureDays ? "Left / day" : "Daily")
+        .navigationTitle({
+            if m.hasFutureDays, let pct = m.goalChangePct {
+                "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+            } else if m.hasFutureDays {
+                "Left / day"
+            } else {
+                "Daily"
+            }
+        }())
         .onAppear {
             let days = m.days
             withAnimation(.smooth(duration: 1.0)) { displayDays = days }
@@ -221,3 +242,42 @@ struct DailyChartView: View {
         }
     }
 }
+
+#if os(watchOS)
+#Preview {
+    @Previewable @State var scenarioIndex = 0
+
+    let store = ChallengeStore.preview(
+        steps: ChallengeStore.previewScenarios[0].steps,
+        km: ChallengeStore.previewScenarios[0].km
+    )
+    let todayKey = Date.todayKey()
+
+    NavigationStack {
+        TabView {
+            DailyChartView()
+        }
+        .tabViewStyle(.verticalPage)
+    }
+    .environment(store)
+    .task(id: scenarioIndex) {
+        let s = ChallengeStore.previewScenarios[scenarioIndex]
+        withAnimation(.smooth) {
+            store.entries[todayKey] = DailyEntry(id: todayKey, steps: s.steps, cyclingKm: s.km, date: .now)
+        }
+    }
+    .overlay(alignment: .top) {
+        Button {
+            scenarioIndex = (scenarioIndex + 1) % ChallengeStore.previewScenarios.count
+        } label: {
+            Text("\(scenarioIndex + 1)/\(ChallengeStore.previewScenarios.count)")
+                .font(.system(size: 9, weight: .bold))
+                .padding(4)
+                .background(.ultraThinMaterial, in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .padding(.top, -40)
+        .padding(.bottom, 2)
+    }
+}
+#endif

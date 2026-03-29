@@ -120,11 +120,21 @@
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
 		};
+		88A03F272F749EFA006740DF /* Exceptions for "FitTrackerWatch" folder in "FitTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PreviewMockData.swift,
+			);
+			target = 88EBB5422F5C863100A25A70 /* FitTracker */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		884E38662F5C8A4500404F42 /* FitTrackerWatch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				88A03F272F749EFA006740DF /* Exceptions for "FitTrackerWatch" folder in "FitTracker" target */,
+			);
 			path = FitTrackerWatch;
 			sourceTree = "<group>";
 		};

@@ -20,7 +20,7 @@ struct WatchHomeView: View {
                 )
 
                 // Page 2: Weekly bar chart
-                WatchDailyChartView()
+                DailyChartView()
 
                 // Page 3: Hourly chart
                 HourlyChartView(hourlyActivity: store.hourlyActivity)
