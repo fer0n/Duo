@@ -2,6 +2,9 @@ import Foundation
 import Observation
 import WidgetKit
 import SwiftUI
+#if os(iOS)
+import BackgroundTasks
+#endif
 
 struct WeeklyStats {
     let entries: [DailyEntry]
@@ -90,45 +93,115 @@ final class ChallengeStore {
 
     // MARK: - Notifications
 
+    /// Combined daily progress (0…∞) and whether the daily goal is considered reached.
+    private var dailyProgress: (combined: Double, reached: Bool) {
+        let goal = dailyGoal
+        let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
+        let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
+        let combined = stepsFraction + kmFraction
+        return (combined, (goal.steps > 0 || goal.km > 0) && combined >= 1.0)
+    }
+
     private func checkGoalNotifications(weekStart: Date) async {
         let notifier = NotificationManager.shared
         let weekly = weeklyStats
         let weeklyGoalReached = weekly.progress >= 1.0
 
-        if settings.notifyWeeklyGoal && weeklyGoalReached {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            let weekKey = formatter.string(from: weekStart)
-            await notifier.sendWeeklyGoalNotificationIfNeeded(weekStartKey: weekKey)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let weekKey = formatter.string(from: weekStart)
+
+        if weeklyGoalReached {
+            if settings.notifyWeeklyGoal {
+                await notifier.sendWeeklyGoalNotificationIfNeeded(weekStartKey: weekKey)
+            } else {
+                // Persist completion so stale HealthKit updates can't re-schedule the reminder.
+                notifier.markWeeklyGoalSeen(weekStartKey: weekKey)
+            }
         }
 
-        let goal = dailyGoal
-        let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
-        let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
-        let combinedProgress = stepsFraction + kmFraction
-        let dailyGoalReached = (goal.steps > 0 || goal.km > 0) && combinedProgress >= 1.0
+        // Use persisted state in addition to live data so that a stale HealthKit
+        // background update (where weeklyProgress appears < 1.0) cannot re-schedule
+        // the daily reminder after the weekly goal has already been reached.
+        let weeklyDone = weeklyGoalReached || notifier.isWeeklyGoalMarkedDone(weekKey: weekKey)
 
-        if settings.notifyDailyGoal && !weeklyGoalReached && dailyGoalReached {
+        let (_, dailyGoalReached) = dailyProgress
+
+        if settings.notifyDailyGoal && !weeklyDone && dailyGoalReached {
             await notifier.sendDailyGoalNotificationIfNeeded()
         }
 
         if settings.dailyReminderEnabled {
-            if dailyGoalReached || weeklyGoalReached {
+            if dailyGoalReached || weeklyDone {
                 notifier.cancelDailyReminder()
             } else {
-                let missingFraction = max(0.0, 1.0 - combinedProgress)
-                let missingSteps = Int((missingFraction * Double(goal.steps)).rounded())
-                let missingKm = missingFraction * goal.km
-                await notifier.scheduleDailyReminderIfNeeded(
+                await notifier.scheduleDailyReminder(
                     hour: settings.dailyReminderHour,
-                    minute: settings.dailyReminderMinute,
-                    missingPercent: Int((missingFraction * 100).rounded()),
-                    missingSteps: missingSteps,
-                    missingKm: missingKm
+                    minute: settings.dailyReminderMinute
                 )
             }
         }
     }
+
+    #if os(iOS)
+    /// Called by the BGAppRefreshTask registered in FitTrackerApp.
+    /// Cancels the fallback notification, fetches fresh HealthKit data, then sends
+    /// an accurate "X% to go" notification if the goal still isn't met.
+    /// If the reminder deadline has already passed the fallback will have fired and
+    /// we do nothing beyond updating the widget.
+    func handleDailyReminderTask(_ task: BGAppRefreshTask) async {
+        let notifier = NotificationManager.shared
+
+        // Prevent checkGoalNotifications (called inside refreshFromHealthKit) from
+        // rescheduling the reminder for today now that we are handling it.
+        notifier.markReminderHandled()
+        notifier.cancelFallbackNotification()
+
+        task.expirationHandler = { task.setTaskCompleted(success: false) }
+
+        // If we're past the reminder deadline the fallback has already fired.
+        // Still refresh so widgets show the latest overshoot.
+        let hour = settings.dailyReminderHour
+        let minute = settings.dailyReminderMinute
+        var comps = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        comps.hour = hour
+        comps.minute = minute
+        let deadlinePassed = Calendar.current.date(from: comps).map { $0 <= .now } ?? false
+
+        let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
+        await refreshFromHealthKit()  // updates entries + widgets; won't reschedule reminder
+
+        if deadlinePassed {
+            task.setTaskCompleted(success: true)
+            return
+        }
+
+        // Check goals with the just-fetched data.
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let weekKey = formatter.string(from: weekStart)
+        let weeklyDone = weeklyStats.progress >= 1.0 || notifier.isWeeklyGoalMarkedDone(weekKey: weekKey)
+        if weeklyDone {
+            task.setTaskCompleted(success: true)
+            return
+        }
+
+        let (combinedProgress, dailyGoalReached) = dailyProgress
+        if dailyGoalReached {
+            task.setTaskCompleted(success: true)
+            return
+        }
+
+        let missingFraction = max(0.0, 1.0 - combinedProgress)
+        let goal = dailyGoal
+        await notifier.sendAccurateDailyReminder(
+            missingPercent: Int((missingFraction * 100).rounded()),
+            missingSteps: Int((missingFraction * Double(goal.steps)).rounded()),
+            missingKm: missingFraction * goal.km
+        )
+        task.setTaskCompleted(success: true)
+    }
+    #endif
 
     /// Call when the user opens the app and can see goal progress.
     /// Suppresses any pending notifications for goals that are already met.
