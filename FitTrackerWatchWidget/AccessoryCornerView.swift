@@ -3,7 +3,7 @@ import WidgetKit
 
 /// Corner complication for Nike Hybrid face.
 /// Progress bar always shows today's progress toward the daily goal.
-/// Curved text: "Done" (weekly done), "+X%" overshoot (daily done), or the daily target.
+/// Curved text: checkmark (weekly done), "+X%" overshoot (daily done), or the daily target.
 struct AccessoryCornerView: View {
     let entry: FitChallengeEntry
 
@@ -22,7 +22,7 @@ struct AccessoryCornerView: View {
     private var dailyDone: Bool { dailyProgressRaw >= 1.0 }
 
     private var curvedText: String {
-        if weeklyDone { return "Done" }
+        if weeklyDone { return "✓" }
         if entry.todaySteps == 0 && entry.todayKm == 0 { return "0" }
         let km = String(format: "%.0f", entry.todayKm)
         if entry.todaySteps == 0 { return String(format: "%.1f km", entry.todayKm) }
