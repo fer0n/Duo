@@ -314,8 +314,8 @@ final class ChallengeStore {
     var dailyContext: (stepsFraction: Double, kmFraction: Double, goalSteps: Int, goalKm: Double) {
         let goal = dailyGoal
         return (
-            stepsFraction: goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 0,
-            kmFraction: goal.km > 0 ? todayKm / goal.km : 0,
+            stepsFraction: goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1,
+            kmFraction: goal.km > 0 ? todayKm / goal.km : 1,
             goalSteps: goal.steps,
             goalKm: goal.km
         )
