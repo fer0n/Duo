@@ -3,10 +3,15 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(ChallengeStore.self) private var store
 
-    private let weekdays: [(Int, String)] = [
-        (1, "Sunday"), (2, "Monday"), (3, "Tuesday"),
-        (4, "Wednesday"), (5, "Thursday"), (6, "Friday"), (7, "Saturday")
-    ]
+    private var weekdays: [(Int, String)] {
+        let cal = Calendar.current
+        let symbols = cal.weekdaySymbols  // localized, 0-indexed (0 = Sunday)
+        let first = cal.firstWeekday - 1  // convert to 0-based index
+        return (0..<7).map { offset in
+            let idx = (first + offset) % 7
+            return (idx + 1, symbols[idx])  // tag matches Calendar.weekday (1=Sunday…7=Saturday)
+        }
+    }
 
     private func reminderTimeBinding(store: ChallengeStore) -> Binding<Date> {
         Binding(
