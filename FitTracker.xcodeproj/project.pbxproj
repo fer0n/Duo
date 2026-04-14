@@ -104,6 +104,8 @@
 				Shared/Views/DailyChartView.swift,
 				Shared/Views/HourlyChartView.swift,
 				Shared/Views/SingleArcGauge.swift,
+				Shared/Views/WatchGaugeView.swift,
+				Shared/Views/WatchStatView.swift,
 			);
 			target = 884E38642F5C8A4500404F42 /* FitTrackerWatch */;
 		};

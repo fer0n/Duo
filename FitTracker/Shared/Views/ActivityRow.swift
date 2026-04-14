@@ -27,13 +27,17 @@ struct ActivityRow: View {
                     .font(.title).monospacedDigit()
                     .minimumScaleFactor(0.01)
                     .lineLimit(1)
+                    #if os(watchOS)
                     .padding(.vertical, -7)
+                    #endif
                     .contentTransition(.numericText())
 
                 Text(goal)
                     .font(.caption).monospacedDigit()
                     .foregroundStyle(.secondary)
+                    #if os(watchOS)
                     .padding(.vertical, -2)
+                #endif
             }
             .fontWeight(.bold)
         }

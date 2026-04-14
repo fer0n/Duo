@@ -300,6 +300,36 @@ final class ChallengeStore {
     var todaySteps: Int { todayEntry?.steps ?? 0 }
     var todayKm: Double { todayEntry?.cyclingKm ?? 0.0 }
 
+    /// Header label for the daily-chart section: "±X% / day", "Left / day", or "Daily".
+    var dailyChartLabel: String {
+        let cal = Calendar.current
+        let weekStart = cal.currentWeekStart(startingOn: settings.challengeStartWeekday)
+        let todayStart = cal.startOfDay(for: .now)
+        let todayIndex = max(0, min(
+            cal.dateComponents([.day], from: weekStart, to: todayStart).day ?? 0, 6
+        ))
+        var byIndex: [Int: DailyEntry] = [:]
+        for entry in currentWeekEntries {
+            let diff = cal.dateComponents([.day], from: weekStart, to: cal.startOfDay(for: entry.date)).day ?? -1
+            if (0..<7).contains(diff) { byIndex[diff] = entry }
+        }
+        var progressBeforeToday = 0.0
+        for i in 0..<todayIndex {
+            if let e = byIndex[i] {
+                progressBeforeToday += ProgressCalculator.weeklyProgressRaw(steps: e.steps, km: e.cyclingKm)
+            }
+        }
+        let todayRaw = ProgressCalculator.weeklyProgressRaw(steps: todaySteps, km: todayKm)
+        let progressThroughToday = progressBeforeToday + todayRaw
+        let futureDaysCount = 7 - todayIndex - 1
+        guard futureDaysCount > 0 else { return "Daily" }
+        let projectedFraction = max(1.0 - progressThroughToday, 0.0) / Double(futureDaysCount)
+        let todayGoalFraction = max(1.0 - progressBeforeToday, 0.0) / Double(futureDaysCount + 1)
+        guard todayGoalFraction > 0 else { return "Left / day" }
+        let pct = (projectedFraction - todayGoalFraction) / todayGoalFraction * 100
+        return "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+    }
+
     var dailyGoal: (steps: Int, km: Double) {
         let prev = currentWeekEntries.filter { !Calendar.current.isDateInToday($0.date) }
         let prevProgress = ProgressCalculator.weeklyProgress(

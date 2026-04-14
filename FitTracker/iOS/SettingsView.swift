@@ -30,7 +30,7 @@ struct SettingsView: View {
         @Bindable var store = store
         NavigationStack {
             Form {
-                Section("Challenge Week Start") {
+                Section {
                     Picker("Week starts on", selection: $store.settings.challengeStartWeekday) {
                         ForEach(weekdays, id: \.0) { day in
                             Text(day.1).tag(day.0)
@@ -75,10 +75,9 @@ struct SettingsView: View {
                 Section("Weekly Goals") {
                     LabeledContent("Steps goal", value: "60,000 steps")
                     LabeledContent("Cycling goal", value: "40 km")
-                    LabeledContent("Formula", value: "steps÷60k + km÷40 = 100%")
                 }
             }
-            .navigationTitle("Settings")
+            .tint(.accentColor)
         }
     }
 }

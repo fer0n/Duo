@@ -50,12 +50,16 @@ struct SingleArcGauge<Content: View>: View {
                                 ? AnyShapeStyle(Color.accentColor.mix(with: .black, by: secondaryDimming).gradient)
                                 : AnyShapeStyle(Color.accentColor.mix(with: .black, by: secondaryDimming)),
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    #if os(watchOS)
                     .shadow(color: .black.opacity(0.5), radius: 3)
+                #endif
 
                 ArcShape(fraction: fraction)
                     .stroke(Color.accentColor.gradient,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                    #if os(watchOS)
                     .shadow(color: .black, radius: 3)
+                #endif
 
                 content(size)
             }

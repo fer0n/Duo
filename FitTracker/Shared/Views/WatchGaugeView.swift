@@ -36,7 +36,11 @@ struct WatchGaugeView: View {
                             .transition(.blurReplace)
                     } else {
                         Text(Int((display.stepsFraction + display.kmFraction) * 100).formatted())
+                            #if os(watchOS)
                             .font(.largeTitle)
+                            #else
+                            .font(.system(size: size * 0.25, weight: .black))
+                            #endif
                             .monospacedDigit()
                             .fontWidth(.compressed)
                             .fontWeight(.black)
@@ -47,7 +51,11 @@ struct WatchGaugeView: View {
                 }
             }
             .animation(.smooth.speed(0.4), value: isWeeklyGoalReached)
+            #if os(watchOS)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            #else
+            .padding(.horizontal, 50)
+            #endif
 
             HStack(spacing: 0) {
                 WatchStatView(
@@ -65,7 +73,9 @@ struct WatchGaugeView: View {
             }
             .fontWidth(.condensed)
         }
+        #if os(watchOS)
         .padding(.vertical, -12)
+        #endif
         .onAppear {
             withAnimation(.smooth(duration: 1.5)) { display = current }
         }
@@ -75,6 +85,7 @@ struct WatchGaugeView: View {
     }
 }
 
+#if os(watchOS)
 #Preview {
     @Previewable @State var scenarioIndex = 0
     @Previewable @State var store = ChallengeStore.preview(
@@ -118,3 +129,4 @@ struct WatchGaugeView: View {
         .padding(.bottom, 2)
     }
 }
+#endif

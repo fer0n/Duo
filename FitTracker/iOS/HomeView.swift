@@ -6,54 +6,25 @@ struct HomeView: View {
     var body: some View {
         let daily = store.dailyContext
         let weekly = store.weeklyStats
-        let isWeeklyGoalReached = weekly.progress >= 1.0
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    // Today — mirrors WatchGaugeView
-                    StatCard {
-                        SingleArcGauge(
-                            fraction: daily.stepsFraction,
-                            secondaryFraction: daily.stepsFraction + daily.kmFraction
-                        ) { size in
-                            ZStack {
-                                if isWeeklyGoalReached {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: size * 0.22, weight: .black))
-                                        .foregroundStyle(Color.accentColor.gradient)
-                                        .transition(.blurReplace)
-                                } else {
-                                    Text("\(Int((daily.stepsFraction + daily.kmFraction) * 100))%")
-                                        .font(.system(size: size * 0.2, weight: .black))
-                                        .monospacedDigit()
-                                        .foregroundStyle(Color.accentColor.gradient)
-                                        .contentTransition(.numericText())
-                                        .transition(.blurReplace)
-                                }
-                            }
-                        }
-                        .animation(.smooth.speed(0.4), value: isWeeklyGoalReached)
-                        .padding(.horizontal, 50)
-
-                        ActivityRow(
-                            fraction: daily.stepsFraction,
-                            systemImage: "figure.run",
-                            value: store.todaySteps.formatted(),
-                            goal: "\(daily.goalSteps.formatted()) steps",
-                            secondaryFraction: daily.stepsFraction + daily.kmFraction
-                        )
-                        ActivityRow(
-                            fraction: daily.kmFraction,
-                            systemImage: "figure.outdoor.cycle",
-                            value: String(format: "%.1f", store.todayKm),
-                            goal: String(format: "%.1f km", daily.goalKm),
-                            secondaryFraction: daily.stepsFraction + daily.kmFraction
-                        )
-                    }
+                    // Today — uses shared WatchGaugeView
+                    WatchGaugeView(
+                        stepsFraction: daily.stepsFraction,
+                        kmFraction: daily.kmFraction,
+                        todaySteps: store.todaySteps,
+                        todayKm: store.todayKm,
+                        goalSteps: daily.goalSteps,
+                        goalKm: daily.goalKm,
+                        isWeeklyGoalReached: weekly.progress >= 1.0
+                    )
+                    .padding()
+                    .padding(.bottom)
 
                     // Daily chart — shared DailyChartView
                     StatCard {
-                        Text(store.remainingDays > 1 ? "Left / day" : "Daily")
+                        Text(store.dailyChartLabel)
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         DailyChartView()
@@ -62,7 +33,7 @@ struct HomeView: View {
 
                     // Hourly activity
                     StatCard {
-                        Text("Today's Activity")
+                        Text("Hourly")
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         HourlyChartView(hourlyActivity: store.hourlyActivity)
@@ -84,7 +55,6 @@ struct HomeView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Fit")
         }
         .onAppear { store.markGoalsSeen() }
     }

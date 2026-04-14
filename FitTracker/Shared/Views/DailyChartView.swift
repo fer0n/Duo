@@ -21,7 +21,6 @@ struct DailyChartView: View {
         let projSteps: Int
         let projKm: Double
         let hasFutureDays: Bool
-        let goalChangePct: Double?
     }
 
     @State private var displayDays: [DayData] = []
@@ -57,12 +56,6 @@ struct DailyChartView: View {
         let projectedFraction: Double = futureDaysCount > 0
             ? max(1.0 - progressThroughToday, 0.0) / Double(futureDaysCount)
             : 0.0
-        let todayGoalFraction: Double = futureDaysCount > 0
-            ? max(1.0 - progressBeforeToday, 0.0) / Double(futureDaysCount + 1)
-            : 0.0
-        let goalChangePct: Double? = todayGoalFraction > 0
-            ? (projectedFraction - todayGoalFraction) / todayGoalFraction * 100
-            : nil
 
         var days: [DayData] = []
         var cumulative = 0.0
@@ -107,8 +100,7 @@ struct DailyChartView: View {
             days: days,
             projSteps: projSteps,
             projKm: projKm,
-            hasFutureDays: futureDaysCount > 0,
-            goalChangePct: goalChangePct
+            hasFutureDays: futureDaysCount > 0
         )
     }
 
@@ -223,15 +215,9 @@ struct DailyChartView: View {
                 .fontWidth(.condensed)
             }
         }
-        .navigationTitle({
-            if m.hasFutureDays, let pct = m.goalChangePct {
-                "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
-            } else if m.hasFutureDays {
-                "Left / day"
-            } else {
-                "Daily"
-            }
-        }())
+        #if os(watchOS)
+        .navigationTitle(store.dailyChartLabel)
+        #endif
         .onAppear {
             let days = m.days
             withAnimation(.smooth(duration: 1.0)) { displayDays = days }
