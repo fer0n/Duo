@@ -22,6 +22,11 @@ struct WatchGaugeView: View {
         DisplayState(stepsFraction: stepsFraction, kmFraction: kmFraction, steps: todaySteps, km: todayKm)
     }
 
+    /// Signed distance from the combined goal, as a fraction: positive above 100%, negative below.
+    private var surplusFraction: Double {
+        (display.stepsFraction + display.kmFraction) - 1
+    }
+
     var body: some View {
         VStack(alignment: .center, spacing: 12) {
             SingleArcGauge(
@@ -61,14 +66,16 @@ struct WatchGaugeView: View {
                 WatchStatView(
                     systemImage: "figure.run",
                     value: display.steps.formatted(),
-                    goal: goalSteps.formatted()
+                    goal: Int((surplusFraction * Double(goalSteps)).rounded())
+                        .formatted(.number.sign(strategy: .always()))
                 )
                 Spacer()
                     .frame(minWidth: 5, maxWidth: 8)
                 WatchStatView(
                     systemImage: "figure.outdoor.cycle",
                     value: display.km.kmFormatted,
-                    goal: goalKm.kmFormatted
+                    goal: (surplusFraction * goalKm)
+                        .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always()))
                 )
             }
             .fontWidth(.condensed)
