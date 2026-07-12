@@ -20,6 +20,8 @@ struct DailyChartView: View {
         let days: [DayData]
         let projSteps: Int
         let projKm: Double
+        let deltaSteps: Int
+        let deltaKm: Double
         let hasFutureDays: Bool
     }
 
@@ -52,6 +54,10 @@ struct DailyChartView: View {
         let (projSteps, projKm) = ProgressCalculator.dailyTarget(
             weeklyProgress: min(progressThroughToday, 1.0),
             remainingDays: futureDaysCount
+        )
+        let (todayGoalSteps, todayGoalKm) = ProgressCalculator.dailyTarget(
+            weeklyProgress: min(progressBeforeToday, 1.0),
+            remainingDays: futureDaysCount + 1
         )
         let projectedFraction: Double = futureDaysCount > 0
             ? max(1.0 - progressThroughToday, 0.0) / Double(futureDaysCount)
@@ -100,6 +106,8 @@ struct DailyChartView: View {
             days: days,
             projSteps: projSteps,
             projKm: projKm,
+            deltaSteps: projSteps - todayGoalSteps,
+            deltaKm: projKm - todayGoalKm,
             hasFutureDays: futureDaysCount > 0
         )
     }
@@ -190,28 +198,23 @@ struct DailyChartView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 2)
 
             if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
-                HStack {
-                    HStack(alignment: .center, spacing: 1) {
-                        Image(systemName: "figure.run")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                        Text("\(m.projSteps)")
-                    }
+                HStack(spacing: 0) {
+                    WatchStatView(
+                        systemImage: "figure.run",
+                        value: m.projSteps.formatted(),
+                        goal: m.deltaSteps.formatted(.number.sign(strategy: .always()))
+                    )
                     Spacer()
-                        .frame(minWidth: 4, maxWidth: 8)
-                    HStack(alignment: .center, spacing: 1) {
-                        Image(systemName: "figure.outdoor.cycle")
-                            .foregroundStyle(.secondary)
-                            .font(.caption)
-                        Text(m.projKm.kmFormatted)
-                    }
+                        .frame(minWidth: 5, maxWidth: 8)
+                    WatchStatView(
+                        systemImage: "figure.outdoor.cycle",
+                        value: m.projKm.kmFormatted,
+                        goal: m.deltaKm.formatted(.number.precision(.fractionLength(1)).sign(strategy: .always()))
+                    )
                 }
-                .font(.title3).monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .fontWeight(.black)
                 .fontWidth(.condensed)
             }
         }

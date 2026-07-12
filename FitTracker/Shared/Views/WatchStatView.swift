@@ -23,7 +23,7 @@ struct WatchStatView: View {
                     #endif
                     .fontWeight(.black)
                     .minimumScaleFactor(0.01)
-                    .padding(.vertical, -4)
+                    .padding(.vertical, -3)
                     .contentTransition(.numericText())
                 Text(goal)
                     #if os(watchOS)
