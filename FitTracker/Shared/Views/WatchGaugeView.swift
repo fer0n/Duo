@@ -66,7 +66,9 @@ struct WatchGaugeView: View {
                 WatchStatView(
                     systemImage: "figure.run",
                     value: display.steps.formatted(),
-                    goal: Int((surplusFraction * Double(goalSteps)).rounded())
+                    goal: surplusFraction > 0
+                        ? goalSteps.formatted()
+                        : Int((surplusFraction * Double(goalSteps)).rounded())
                         .formatted(.number.sign(strategy: .always()))
                 )
                 Spacer()
@@ -74,7 +76,9 @@ struct WatchGaugeView: View {
                 WatchStatView(
                     systemImage: "figure.outdoor.cycle",
                     value: display.km.kmFormatted,
-                    goal: (surplusFraction * goalKm)
+                    goal: surplusFraction > 0
+                        ? goalKm.formatted(.number.precision(.fractionLength(0...1)))
+                        : (surplusFraction * goalKm)
                         .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always()))
                 )
             }

@@ -4,14 +4,22 @@ import Charts
 struct DailyChartView: View {
     @Environment(ChallengeStore.self) private var store
 
+    /// Optional binding so a host (e.g. iOS `HomeView`) can render the adaptive header itself.
+    var headerLabel: Binding<String>?
+
     private struct DayData: Identifiable {
         let id: Int
         let date: Date
         let stepsFraction: Double
         let kmFraction: Double
         let goalLine: Double
+        let steps: Int
+        let km: Double
+        let goalSteps: Int
+        let goalKm: Double
         let isToday: Bool
         let isFuture: Bool
+        let isNextDay: Bool
 
         var total: Double { stepsFraction + kmFraction }
     }
@@ -26,6 +34,7 @@ struct DailyChartView: View {
     }
 
     @State private var displayDays: [DayData] = []
+    @State private var selectedDate: Date?
 
     private var chartModel: ChartModel {
         let cal = Calendar.current
@@ -70,18 +79,11 @@ struct DailyChartView: View {
             let isFuture = i > todayIndex
             let isToday = i == todayIndex
 
-            let stepsFraction: Double
-            let kmFraction: Double
-            if isFuture {
-                stepsFraction = 0.0
-                kmFraction = 0.0
-            } else if let e = byIndex[i] {
-                stepsFraction = Double(e.steps) / ProgressCalculator.stepGoal
-                kmFraction = e.cyclingKm / ProgressCalculator.kmGoal
-            } else {
-                stepsFraction = 0.0
-                kmFraction = 0.0
-            }
+            let entry = isFuture ? nil : byIndex[i]
+            let steps = entry?.steps ?? 0
+            let km = entry?.cyclingKm ?? 0.0
+            let stepsFraction = Double(steps) / ProgressCalculator.stepGoal
+            let kmFraction = km / ProgressCalculator.kmGoal
 
             let goalLine: Double = isFuture
                 ? projectedFraction
@@ -95,8 +97,13 @@ struct DailyChartView: View {
                 stepsFraction: stepsFraction,
                 kmFraction: kmFraction,
                 goalLine: goalLine,
+                steps: steps,
+                km: km,
+                goalSteps: Int((goalLine * ProgressCalculator.stepGoal).rounded()),
+                goalKm: (goalLine * ProgressCalculator.kmGoal * 10).rounded() / 10,
                 isToday: isToday,
-                isFuture: isFuture
+                isFuture: isFuture,
+                isNextDay: i == todayIndex + 1
             ))
 
             if !isFuture { cumulative += stepsFraction + kmFraction }
@@ -110,6 +117,15 @@ struct DailyChartView: View {
             deltaKm: projKm - todayGoalKm,
             hasFutureDays: futureDaysCount > 0
         )
+    }
+
+    /// Matches the background behind the chart so the highlight marker can paint over the goal line.
+    private var chartMaskColor: Color {
+        #if os(watchOS)
+        .black
+        #else
+        Color(.secondarySystemBackground)
+        #endif
     }
 
     private func barDisplay(_ value: Double, min minFraction: Double) -> Double {
@@ -130,8 +146,32 @@ struct DailyChartView: View {
         )
     }
 
+    /// A day is dimmed to grayscale when another day is the active one.
+    private func isDimmed(_ day: DayData, activeDate: Date?) -> Bool {
+        guard let activeDate else { return false }
+        return !Calendar.current.isDate(day.date, inSameDayAs: activeDate)
+    }
+
+    private func day(for date: Date?, in days: [DayData]) -> DayData? {
+        guard let date else { return nil }
+        return days.first { Calendar.current.isDate($0.date, inSameDayAs: date) }
+    }
+
+    /// Header text for the selected day's perspective, or the default projection label.
+    private func headerText(selected: DayData?) -> String {
+        guard let day = selected else { return store.dailyChartLabel }
+        guard day.goalLine > 0 else { return "Daily" }
+        let pct = (day.total - day.goalLine) / day.goalLine * 100
+        return "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+    }
+
     var body: some View {
         let m = chartModel
+        // When no future days remain, fall back to the last day's perspective so the
+        // chart never shows an empty footer.
+        let activeDate: Date? = selectedDate ?? (m.hasFutureDays ? nil : displayDays.last?.date)
+        let selected = day(for: activeDate, in: displayDays)
+        let header = headerText(selected: selected)
         let maxVal = max(
             m.days.map(\.total).max() ?? 0,
             m.days.map(\.goalLine).max() ?? 0
@@ -142,7 +182,10 @@ struct DailyChartView: View {
             Chart {
                 ForEach(displayDays) { day in
                     let display = day.isFuture ? 0.0 : barDisplay(day.total, min: minBarFraction)
-                    let color: Color = day.isFuture ? .secondary.opacity(0.15) : kmBarColor
+                    let dimmed = isDimmed(day, activeDate: activeDate)
+                    let color: Color = dimmed
+                        ? .secondary.opacity(0.35)
+                        : (day.isFuture ? .secondary.opacity(0.15) : kmBarColor)
                     BarMark(
                         x: .value("Day", day.date, unit: .day),
                         y: .value("Total", display),
@@ -155,6 +198,7 @@ struct DailyChartView: View {
 
                 ForEach(displayDays) { day in
                     let display = day.isFuture ? 0.0 : barDisplay(day.stepsFraction, min: minBarFraction)
+                    let color: Color = isDimmed(day, activeDate: activeDate) ? .secondary.opacity(0.7) : .accentColor
                     BarMark(
                         x: .value("Day", day.date, unit: .day),
                         y: .value("Steps", display),
@@ -162,10 +206,12 @@ struct DailyChartView: View {
                         stacking: .unstacked
                     )
                     .clipShape(.capsule)
-                    .foregroundStyle(barGradient(value: day.stepsFraction, display: display, color: .accentColor))
+                    .foregroundStyle(barGradient(value: day.stepsFraction, display: display, color: color))
                 }
 
                 ForEach(displayDays) { day in
+                    let isNextDayHighlight = selected == nil && m.hasFutureDays && day.isNextDay
+
                     LineMark(
                         x: .value("Day", day.date, unit: .day),
                         y: .value("Goal", day.goalLine)
@@ -178,7 +224,26 @@ struct DailyChartView: View {
                         y: .value("Goal", day.goalLine)
                     )
                     .symbolSize(30)
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(
+                        isNextDayHighlight ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.white.opacity(0.9))
+                    )
+                    .annotation(position: .overlay) {
+                        if isNextDayHighlight {
+                            ZStack {
+                                // Paints over the dashed goal line so it never shows
+                                // through the gap between the inner dot and the ring.
+                                Circle()
+                                    .fill(chartMaskColor)
+                                    .frame(width: 10, height: 10)
+                                Circle()
+                                    .fill(Color.accentColor)
+                                    .frame(width: 5, height: 5)
+                                Circle()
+                                    .stroke(Color.accentColor, lineWidth: 1.5)
+                                    .frame(width: 10, height: 10)
+                            }
+                        }
+                    }
                 }
             }
             .chartYAxis(.hidden)
@@ -197,10 +262,27 @@ struct DailyChartView: View {
                     }
                 }
             }
+            .chartXSelection(value: $selectedDate)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.horizontal, 2)
 
-            if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
+            if let day = selected {
+                HStack(spacing: 0) {
+                    WatchStatView(
+                        systemImage: "figure.run",
+                        value: day.steps.formatted(),
+                        goal: day.goalSteps.formatted()
+                    )
+                    Spacer()
+                        .frame(minWidth: 5, maxWidth: 8)
+                    WatchStatView(
+                        systemImage: "figure.outdoor.cycle",
+                        value: day.km.kmFormatted,
+                        goal: day.goalKm.kmFormatted
+                    )
+                }
+                .fontWidth(.condensed)
+            } else if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
                 HStack(spacing: 0) {
                     WatchStatView(
                         systemImage: "figure.run",
@@ -218,9 +300,14 @@ struct DailyChartView: View {
                 .fontWidth(.condensed)
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture { selectedDate = nil }  // tap outside the bars clears the selection
         #if os(watchOS)
-        .navigationTitle(store.dailyChartLabel)
+        .navigationTitle(header)
         #endif
+        .onChange(of: header, initial: true) { _, new in
+            headerLabel?.wrappedValue = new
+        }
         .onAppear {
             let days = m.days
             withAnimation(.smooth(duration: 1.0)) { displayDays = days }

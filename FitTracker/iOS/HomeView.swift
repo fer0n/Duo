@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(ChallengeStore.self) private var store
+    @State private var chartHeader = ""
 
     var body: some View {
         let daily = store.dailyContext
@@ -24,10 +25,10 @@ struct HomeView: View {
 
                     // Daily chart — shared DailyChartView
                     StatCard {
-                        Text(store.dailyChartLabel)
+                        Text(chartHeader.isEmpty ? store.dailyChartLabel : chartHeader)
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        DailyChartView()
+                        DailyChartView(headerLabel: $chartHeader)
                             .frame(height: 160)
                     }
 
