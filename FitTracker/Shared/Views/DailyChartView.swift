@@ -161,8 +161,8 @@ struct DailyChartView: View {
     private func headerText(selected: DayData?) -> String {
         guard let day = selected else { return store.dailyChartLabel }
         guard day.goalLine > 0 else { return "Daily" }
-        let pct = (day.total - day.goalLine) / day.goalLine * 100
-        return "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+        let pct = day.total / day.goalLine * 100
+        return "\(pct.formatted(.number.precision(.fractionLength(0))))%"
     }
 
     var body: some View {
