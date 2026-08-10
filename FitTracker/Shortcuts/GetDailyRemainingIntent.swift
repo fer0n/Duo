@@ -58,7 +58,7 @@ struct GetDailyRemainingIntent: AppIntent {
     }
 
     private func computeRemaining() async -> DailyRemainingResult {
-        let defaults = UserDefaults(suiteName: "group.com.pentlandFirth.FitTracker") ?? .standard
+        let defaults = UserDefaults(suiteName: "group.net.octabits.FitTracker") ?? .standard
 
         var settings = ChallengeSettings()
         if let data = defaults.data(forKey: "challengeSettings"),

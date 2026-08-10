@@ -28,7 +28,7 @@ private struct WidgetDataReader {
     let todayKm: Double
 
     init() {
-        let defaults = UserDefaults(suiteName: "group.com.pentlandFirth.FitTracker") ?? .standard
+        let defaults = UserDefaults(suiteName: "group.net.octabits.FitTracker") ?? .standard
         if let data = defaults.data(forKey: "challengeSettings"),
            let decoded = try? JSONDecoder().decode(ChallengeSettings.self, from: data) {
             settings = decoded

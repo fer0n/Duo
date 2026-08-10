@@ -27,7 +27,7 @@ struct HourlyActivity: Identifiable, Equatable {
 @Observable
 @MainActor
 final class ChallengeStore {
-    static let appGroupID = "group.com.pentlandFirth.FitTracker"
+    static let appGroupID = "group.net.octabits.FitTracker"
     private static let entriesKey = "dailyEntries"
     private static let settingsKey = "challengeSettings"
     private static let previousSessionKey = "previousSessionEntries"

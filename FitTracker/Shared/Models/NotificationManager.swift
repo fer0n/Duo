@@ -9,7 +9,7 @@ final class NotificationManager {
     static let shared = NotificationManager()
 
     private let defaults: UserDefaults
-    private static let appGroupID = "group.com.pentlandFirth.FitTracker"
+    private static let appGroupID = "group.net.octabits.FitTracker"
     private static let dailyNotifiedKey = "lastDailyGoalNotificationDay"
     private static let weeklyNotifiedKey = "lastWeeklyGoalNotificationWeekStart"
     private static let dailyReminderIdentifier = "dailyGoalReminder"
@@ -17,7 +17,7 @@ final class NotificationManager {
 
     // Must be listed in Info.plist under BGTaskSchedulerPermittedIdentifiers.
     #if os(iOS)
-    static let dailyReminderTaskIdentifier = "com.pentlandFirth.FitTracker.dailyGoalReminder"
+    static let dailyReminderTaskIdentifier = "net.octabits.FitTracker.dailyGoalReminder"
     #endif
 
     private init() {

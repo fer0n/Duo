@@ -8,7 +8,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.pentlandFirth.FitTracker</string>
+		<string>group.net.octabits.FitTracker</string>
 	</array>
 </dict>
 </plist>
