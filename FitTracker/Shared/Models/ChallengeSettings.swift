@@ -1,5 +1,17 @@
 import Foundation
 
+/// Storage shared between the app, the watch app and all widget extensions.
+enum AppGroup {
+    static let id = "group.net.octabits.FitTracker"
+
+    /// Weekly goals live outside the settings blob so nonisolated widget code can read
+    /// them without decoding JSON on every access.
+    static let stepGoalKey = "goalSteps"
+    static let kmGoalKey = "goalKm"
+
+    nonisolated(unsafe) static let defaults = UserDefaults(suiteName: id) ?? .standard
+}
+
 struct ChallengeSettings: Codable {
     // 1=Sunday, 2=Monday, ... 7=Saturday (matches Calendar.weekday)
     var challengeStartWeekday: Int = 2  // Monday default
@@ -8,4 +20,6 @@ struct ChallengeSettings: Codable {
     var dailyReminderEnabled: Bool = false
     var dailyReminderHour: Int = 20   // 8 PM default
     var dailyReminderMinute: Int = 0
+    var stepGoal: Double = ProgressCalculator.defaultStepGoal
+    var kmGoal: Double = ProgressCalculator.defaultKmGoal
 }

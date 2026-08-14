@@ -27,12 +27,12 @@ struct HourlyActivity: Identifiable, Equatable {
 @Observable
 @MainActor
 final class ChallengeStore {
-    static let appGroupID = "group.net.octabits.FitTracker"
+    static let appGroupID = AppGroup.id
     private static let entriesKey = "dailyEntries"
     private static let settingsKey = "challengeSettings"
     private static let previousSessionKey = "previousSessionEntries"
 
-    private let defaults: UserDefaults
+    private let defaults = AppGroup.defaults
     private let healthKit = HealthKitManager.shared
 
     var entries: [String: DailyEntry] = [:]
@@ -43,8 +43,8 @@ final class ChallengeStore {
     @ObservationIgnored private var isInitialRefresh = true
 
     init(skipHealthKit: Bool = false) {
-        self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
         loadFromDefaults()
+        ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
         if !skipHealthKit {
             Task { await setupHealthKit() }
         }
@@ -257,6 +257,7 @@ final class ChallengeStore {
         if let data = try? JSONEncoder().encode(settings) {
             defaults.set(data, forKey: Self.settingsKey)
         }
+        ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
         // Cancel any pending reminder so checkGoalNotifications can reschedule with updated settings.
         NotificationManager.shared.cancelDailyReminder()
         Task { await refreshFromHealthKit() }
@@ -286,8 +287,8 @@ final class ChallengeStore {
             entries: week,
             steps: steps,
             km: km,
-            stepsFraction: Double(steps) / ProgressCalculator.stepGoal,
-            kmFraction: km / ProgressCalculator.kmGoal,
+            stepsFraction: ProgressCalculator.stepsFraction(steps),
+            kmFraction: ProgressCalculator.kmFraction(km),
             progress: ProgressCalculator.weeklyProgress(steps: steps, km: km)
         )
     }

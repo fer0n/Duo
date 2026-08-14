@@ -1,12 +1,39 @@
 import Foundation
 
 enum ProgressCalculator {
-    static let stepGoal: Double = 60_000
-    static let kmGoal: Double = 40.0
+    static let defaultStepGoal: Double = 60_000
+    static let defaultKmGoal: Double = 40.0
+
+    /// User-adjustable weekly goals, read from the shared app group so widgets and the
+    /// watch app stay in sync with the iOS settings screen.
+    static var stepGoal: Double {
+        AppGroup.defaults.object(forKey: AppGroup.stepGoalKey) as? Double ?? defaultStepGoal
+    }
+
+    static var kmGoal: Double {
+        AppGroup.defaults.object(forKey: AppGroup.kmGoalKey) as? Double ?? defaultKmGoal
+    }
+
+    /// Persists the goals so every process (widgets included) picks them up.
+    static func storeGoals(steps: Double, km: Double) {
+        AppGroup.defaults.set(steps, forKey: AppGroup.stepGoalKey)
+        AppGroup.defaults.set(km, forKey: AppGroup.kmGoalKey)
+    }
+
+    // A goal of 0 disables that activity — it then contributes nothing instead of dividing by zero.
+    static func stepsFraction(_ steps: Int) -> Double {
+        let goal = stepGoal
+        return goal > 0 ? Double(steps) / goal : 0
+    }
+
+    static func kmFraction(_ km: Double) -> Double {
+        let goal = kmGoal
+        return goal > 0 ? km / goal : 0
+    }
 
     // Raw combined weekly progress (uncapped)
     static func weeklyProgressRaw(steps: Int, km: Double) -> Double {
-        Double(steps) / stepGoal + km / kmGoal
+        stepsFraction(steps) + kmFraction(km)
     }
 
     // Combined weekly progress, capped at 1.0
@@ -16,13 +43,13 @@ enum ProgressCalculator {
 
     // Steps fraction of the full bar (0...1)
     static func stepsContribution(steps: Int) -> Double {
-        min(Double(steps) / stepGoal, 1.0)
+        min(stepsFraction(steps), 1.0)
     }
 
     // Cycling fraction that fills after steps in the bar (0...1)
     static func cyclingContribution(km: Double, steps: Int) -> Double {
-        let stepPortion = min(Double(steps) / stepGoal, 1.0)
-        let total = min(stepPortion + km / kmGoal, 1.0)
+        let stepPortion = stepsContribution(steps: steps)
+        let total = min(stepPortion + kmFraction(km), 1.0)
         return max(total - stepPortion, 0.0)
     }
 

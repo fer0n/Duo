@@ -77,9 +77,31 @@ struct SettingsView: View {
                 }
                 .animation(.smooth, value: store.settings.dailyReminderEnabled)
 
-                Section("Weekly Goals") {
-                    LabeledContent("Steps goal", value: "60,000 steps")
-                    LabeledContent("Cycling goal", value: "40 km")
+                Section {
+                    Stepper(
+                        value: $store.settings.stepGoal,
+                        in: 0...300_000,
+                        step: 1_000,
+                        onEditingChanged: { editing in if !editing { store.save() } },
+                        label: {
+                            LabeledContent("Steps", value: Int(store.settings.stepGoal).formatted())
+                        }
+                    )
+
+                    Stepper(
+                        value: $store.settings.kmGoal,
+                        in: 0...500,
+                        step: 1,
+                        onEditingChanged: { editing in if !editing { store.save() } },
+                        label: {
+                            LabeledContent("Cycling", value: "\(store.settings.kmGoal.kmFormatted) km")
+                        }
+                    )
+                } header: {
+                    Text("Weekly Goals")
+                } footer: {
+                    Text("Steps and cycling count as alternatives — any mix that adds up to 100% "
+                            + "completes the week. Set a goal to 0 to leave that activity out.")
                 }
             }
             .tint(.accentColor)

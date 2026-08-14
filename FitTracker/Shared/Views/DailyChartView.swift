@@ -82,8 +82,8 @@ struct DailyChartView: View {
             let entry = isFuture ? nil : byIndex[i]
             let steps = entry?.steps ?? 0
             let km = entry?.cyclingKm ?? 0.0
-            let stepsFraction = Double(steps) / ProgressCalculator.stepGoal
-            let kmFraction = km / ProgressCalculator.kmGoal
+            let stepsFraction = ProgressCalculator.stepsFraction(steps)
+            let kmFraction = ProgressCalculator.kmFraction(km)
 
             let goalLine: Double = isFuture
                 ? projectedFraction

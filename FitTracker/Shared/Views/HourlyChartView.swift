@@ -28,7 +28,7 @@ struct HourlyChartView: View {
 
             // Steps-only bar in accent color — overlaid on top, shorter.
             ForEach(displayActivity) { item in
-                let stepsFraction = Double(item.steps) / ProgressCalculator.stepGoal
+                let stepsFraction = ProgressCalculator.stepsFraction(item.steps)
                 BarMark(
                     x: .value("Hour", item.date, unit: .hour),
                     y: .value("Steps", stepsFraction > 0 ? max(stepsFraction, minBar) : 0),
