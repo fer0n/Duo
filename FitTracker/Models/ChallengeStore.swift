@@ -15,21 +15,12 @@ struct WeeklyStats {
     let progress: Double
 }
 
-struct HourlyActivity: Identifiable, Equatable {
-    let hour: Int
-    let steps: Int
-    let km: Double
-    var id: Int { hour }
-    var date: Date { Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: .now) ?? .now }
-    var units: Double { ProgressCalculator.weeklyProgressRaw(steps: steps, km: km) }
-}
-
 @Observable
 @MainActor
 final class ChallengeStore {
     static let appGroupID = AppGroup.id
-    private static let entriesKey = "dailyEntries"
-    private static let settingsKey = "challengeSettings"
+    private static let entriesKey = AppGroup.entriesKey
+    private static let settingsKey = AppGroup.settingsKey
     private static let previousSessionKey = "previousSessionEntries"
 
     private let defaults = AppGroup.defaults
@@ -76,6 +67,7 @@ final class ChallengeStore {
         let isFirst = isInitialRefresh
         isInitialRefresh = false
         let entriesChanged = merged != entries
+        let hourlyChanged = newHourlyActivity != hourlyActivity
         let animation: Animation = isFirst
             ? .smooth(duration: 1.5).delay(2)
             : .smooth(duration: 1.5)
@@ -83,11 +75,15 @@ final class ChallengeStore {
             if entriesChanged || isFirst { entries = merged }
             hourlyActivity = newHourlyActivity
         }
-        guard entriesChanged || isFirst else { return }
-        defaults.removeObject(forKey: Self.previousSessionKey)
-        hasUnsavedSnapshot = true
-        writeEntriesToDefaults()
+        if hourlyChanged { writeHourlyToDefaults() }
+        if entriesChanged || isFirst {
+            defaults.removeObject(forKey: Self.previousSessionKey)
+            hasUnsavedSnapshot = true
+            writeEntriesToDefaults()
+        }
+        guard entriesChanged || isFirst || hourlyChanged else { return }
         WidgetCenter.shared.reloadAllTimelines()
+        guard entriesChanged || isFirst else { return }
         await checkGoalNotifications(weekStart: weekStart)
     }
 
@@ -270,6 +266,13 @@ final class ChallengeStore {
         }
     }
 
+    private func writeHourlyToDefaults() {
+        if let data = try? JSONEncoder().encode(hourlyActivity) {
+            defaults.set(data, forKey: AppGroup.hourlyKey)
+            defaults.set(Date.todayKey(), forKey: AppGroup.hourlyDayKey)
+        }
+    }
+
     // MARK: - Weekly Data
 
     var currentWeekEntries: [DailyEntry] {
@@ -303,32 +306,12 @@ final class ChallengeStore {
 
     /// Header label for the daily-chart section: "±X% / day", "Left / day", or "Daily".
     var dailyChartLabel: String {
-        let cal = Calendar.current
-        let weekStart = cal.currentWeekStart(startingOn: settings.challengeStartWeekday)
-        let todayStart = cal.startOfDay(for: .now)
-        let todayIndex = max(0, min(
-            cal.dateComponents([.day], from: weekStart, to: todayStart).day ?? 0, 6
-        ))
-        var byIndex: [Int: DailyEntry] = [:]
-        for entry in currentWeekEntries {
-            let diff = cal.dateComponents([.day], from: weekStart, to: cal.startOfDay(for: entry.date)).day ?? -1
-            if (0..<7).contains(diff) { byIndex[diff] = entry }
-        }
-        var progressBeforeToday = 0.0
-        for i in 0..<todayIndex {
-            if let e = byIndex[i] {
-                progressBeforeToday += ProgressCalculator.weeklyProgressRaw(steps: e.steps, km: e.cyclingKm)
-            }
-        }
-        let todayRaw = ProgressCalculator.weeklyProgressRaw(steps: todaySteps, km: todayKm)
-        let progressThroughToday = progressBeforeToday + todayRaw
-        let futureDaysCount = 7 - todayIndex - 1
-        guard futureDaysCount > 0 else { return "Daily" }
-        let projectedFraction = max(1.0 - progressThroughToday, 0.0) / Double(futureDaysCount)
-        let todayGoalFraction = max(1.0 - progressBeforeToday, 0.0) / Double(futureDaysCount + 1)
-        guard todayGoalFraction > 0 else { return "Left / day" }
-        let pct = (projectedFraction - todayGoalFraction) / todayGoalFraction * 100
-        return "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+        WeekChartModel(
+            weekEntries: currentWeekEntries,
+            startWeekday: settings.challengeStartWeekday,
+            todaySteps: todaySteps,
+            todayKm: todayKm
+        ).headerLabel
     }
 
     var dailyGoal: (steps: Int, km: Double) {

@@ -94,10 +94,13 @@
 				"Shared/Extensions/Date+Challenge.swift",
 				"Shared/Extensions/Double+Format.swift",
 				Shared/Models/ChallengeSettings.swift,
+				Shared/Models/ChallengeSnapshot.swift,
 				Shared/Models/DailyEntry.swift,
 				Shared/Models/HealthKitManager.swift,
+				Shared/Models/HourlyActivity.swift,
 				Shared/Models/NotificationManager.swift,
 				Shared/Models/ProgressCalculator.swift,
+				Shared/Models/WeekChartModel.swift,
 				Shared/Views/ActivityPageView.swift,
 				Shared/Views/ActivityRow.swift,
 				Shared/Views/ArcProgressBar.swift,
@@ -106,6 +109,7 @@
 				Shared/Views/SingleArcGauge.swift,
 				Shared/Views/WatchGaugeView.swift,
 				Shared/Views/WatchStatView.swift,
+				Shared/Views/WeekChart.swift,
 			);
 			target = 884E38642F5C8A4500404F42 /* FitTrackerWatch */;
 		};
@@ -115,10 +119,13 @@
 				Models/ChallengeStore.swift,
 				"Shared/Extensions/Date+Challenge.swift",
 				Shared/Models/ChallengeSettings.swift,
+				Shared/Models/ChallengeSnapshot.swift,
 				Shared/Models/DailyEntry.swift,
 				Shared/Models/HealthKitManager.swift,
+				Shared/Models/HourlyActivity.swift,
 				Shared/Models/NotificationManager.swift,
 				Shared/Models/ProgressCalculator.swift,
+				Shared/Models/WeekChartModel.swift,
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
 		};

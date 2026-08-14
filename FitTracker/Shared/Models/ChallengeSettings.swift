@@ -9,6 +9,12 @@ enum AppGroup {
     static let stepGoalKey = "goalSteps"
     static let kmGoalKey = "goalKm"
 
+    static let entriesKey = "dailyEntries"
+    static let settingsKey = "challengeSettings"
+    static let hourlyKey = "hourlyActivity"
+    /// Day the cached hourly data belongs to, so widgets don't show yesterday's hours.
+    static let hourlyDayKey = "hourlyActivityDay"
+
     nonisolated(unsafe) static let defaults = UserDefaults(suiteName: id) ?? .standard
 }
 

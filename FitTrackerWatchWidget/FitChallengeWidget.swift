@@ -18,72 +18,29 @@ struct FitChallengeEntry: TimelineEntry {
     let todayKm: Double
 }
 
-// MARK: - Nonisolated data reader for widget (avoids @MainActor ChallengeStore)
-
-private struct WidgetDataReader {
-    let settings: ChallengeSettings
-    let weeklySteps: Int
-    let weeklyKm: Double
-    let todaySteps: Int
-    let todayKm: Double
-
-    init() {
-        let defaults = UserDefaults(suiteName: "group.net.octabits.FitTracker") ?? .standard
-        if let data = defaults.data(forKey: "challengeSettings"),
-           let decoded = try? JSONDecoder().decode(ChallengeSettings.self, from: data) {
-            settings = decoded
-        } else {
-            settings = ChallengeSettings()
-        }
-        if let data = defaults.data(forKey: "dailyEntries"),
-           let entries = try? JSONDecoder().decode([String: DailyEntry].self, from: data) {
-            let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
-            let weekEntries = entries.values.filter { $0.date >= weekStart }
-            weeklySteps = weekEntries.reduce(0) { $0 + $1.steps }
-            weeklyKm = weekEntries.reduce(0.0) { $0 + $1.cyclingKm }
-            let todayEntry = entries[Date.todayKey()]
-            todaySteps = todayEntry?.steps ?? 0
-            todayKm = todayEntry?.cyclingKm ?? 0.0
-        } else {
-            weeklySteps = 0
-            weeklyKm = 0
-            todaySteps = 0
-            todayKm = 0.0
-        }
-    }
-}
-
 // MARK: - Timeline Provider
 
 struct FitChallengeProvider: TimelineProvider {
     typealias Entry = FitChallengeEntry
 
     private func makeEntry(date: Date) -> FitChallengeEntry {
-        let reader = WidgetDataReader()
-        let remaining = Calendar.current.remainingDaysInChallengeWeek(
-            startingOn: reader.settings.challengeStartWeekday
-        )
-        // Daily target is based on progress *before* today so it stays stable throughout the day
-        let prevProgress = ProgressCalculator.weeklyProgress(
-            steps: reader.weeklySteps - reader.todaySteps,
-            km: reader.weeklyKm - reader.todayKm
-        )
-        let target = ProgressCalculator.dailyTarget(weeklyProgress: prevProgress, remainingDays: remaining)
-        let progress = ProgressCalculator.weeklyProgress(steps: reader.weeklySteps, km: reader.weeklyKm)
-        let raw = ProgressCalculator.weeklyProgressRaw(steps: reader.weeklySteps, km: reader.weeklyKm)
+        let snapshot = ChallengeSnapshot()
+        let target = snapshot.dailyTarget
         return FitChallengeEntry(
             date: date,
-            weeklyProgress: progress,
-            weeklyProgressRaw: raw,
-            stepsContrib: ProgressCalculator.stepsContribution(steps: reader.weeklySteps),
-            cyclingContrib: ProgressCalculator.cyclingContribution(km: reader.weeklyKm, steps: reader.weeklySteps),
+            weeklyProgress: snapshot.weeklyProgress,
+            weeklyProgressRaw: snapshot.weeklyProgressRaw,
+            stepsContrib: ProgressCalculator.stepsContribution(steps: snapshot.weeklySteps),
+            cyclingContrib: ProgressCalculator.cyclingContribution(
+                km: snapshot.weeklyKm, steps: snapshot.weeklySteps
+            ),
             dailyTargetText: ProgressCalculator.dailyTargetText(steps: target.steps, km: target.km),
             dailyTargetSteps: target.steps,
             dailyTargetKm: target.km,
-            weeklySteps: reader.weeklySteps,
-            weeklyKm: reader.weeklyKm,
-            todaySteps: reader.todaySteps,
-            todayKm: reader.todayKm
+            weeklySteps: snapshot.weeklySteps,
+            weeklyKm: snapshot.weeklyKm,
+            todaySteps: snapshot.todaySteps,
+            todayKm: snapshot.todayKm
         )
     }
 
