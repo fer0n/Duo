@@ -8,6 +8,10 @@ struct WatchGaugeView: View {
     let goalSteps: Int
     let goalKm: Double
     let isWeeklyGoalReached: Bool
+    /// Widgets render a single static snapshot — they must not start from the empty state.
+    var animates: Bool = true
+    /// Horizontal inset around the gauge on iOS; widgets need the full width.
+    var gaugeInset: CGFloat = 50
 
     private struct DisplayState: Equatable {
         var stepsFraction: Double = 0
@@ -16,11 +20,13 @@ struct WatchGaugeView: View {
         var km: Double = 0
     }
 
-    @State private var display = DisplayState()
+    @State private var animatedDisplay = DisplayState()
 
     private var current: DisplayState {
         DisplayState(stepsFraction: stepsFraction, kmFraction: kmFraction, steps: todaySteps, km: todayKm)
     }
+
+    private var display: DisplayState { animates ? animatedDisplay : current }
 
     /// Signed distance from the combined goal, as a fraction: positive above 100%, negative below.
     private var surplusFraction: Double {
@@ -59,7 +65,7 @@ struct WatchGaugeView: View {
             #if os(watchOS)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             #else
-            .padding(.horizontal, 50)
+            .padding(.horizontal, gaugeInset)
             #endif
 
             HStack(spacing: 0) {
@@ -88,10 +94,12 @@ struct WatchGaugeView: View {
         .padding(.vertical, -12)
         #endif
         .onAppear {
-            withAnimation(.smooth(duration: 1.5)) { display = current }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.5)) { animatedDisplay = current }
         }
         .onChange(of: current) { _, new in
-            withAnimation(.smooth(duration: 1.5)) { display = new }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.5)) { animatedDisplay = new }
         }
     }
 }

@@ -13,6 +13,8 @@ struct ActivityPageConfig {
 
 struct ActivityPageView: View {
     let config: ActivityPageConfig
+    /// Widgets render a single static snapshot — they must not start from the empty state.
+    var animates: Bool = true
 
     private struct DisplayState: Equatable {
         var stepsFraction: Double = 0
@@ -21,12 +23,14 @@ struct ActivityPageView: View {
         var km: Double = 0
     }
 
-    @State private var display = DisplayState()
+    @State private var animatedDisplay = DisplayState()
 
     private var current: DisplayState {
         DisplayState(stepsFraction: config.stepsFraction, kmFraction: config.kmFraction,
                      steps: config.steps, km: config.km)
     }
+
+    private var display: DisplayState { animates ? animatedDisplay : current }
 
     var body: some View {
         VStack(spacing: 10) {
@@ -58,10 +62,12 @@ struct ActivityPageView: View {
             )
         }
         .onAppear {
-            withAnimation(.smooth(duration: 1.5)) { display = current }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.5)) { animatedDisplay = current }
         }
         .onChange(of: current) { _, new in
-            withAnimation(.smooth(duration: 1.5)) { display = new }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.5)) { animatedDisplay = new }
         }
     }
 }

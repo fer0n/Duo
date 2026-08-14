@@ -5,8 +5,12 @@ let kmBarColor = Color.accentColor.mix(with: .black, by: 0.2)
 
 struct HourlyChartView: View {
     let hourlyActivity: [HourlyActivity]
+    /// Widgets render a single static snapshot — they must not start from the empty state.
+    var animates: Bool = true
 
-    @State private var displayActivity: [HourlyActivity] = []
+    @State private var animatedActivity: [HourlyActivity] = []
+
+    private var displayActivity: [HourlyActivity] { animates ? animatedActivity : hourlyActivity }
 
     private var maxUnits: Double { hourlyActivity.map(\.units).max() ?? 0 }
     private var minBar: Double { maxUnits > 0 ? maxUnits * 0.033 : 0.01 }
@@ -58,10 +62,12 @@ struct HourlyChartView: View {
         .chartYScale(domain: 0...(maxUnits > 0 ? maxUnits : 0.01))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
-            withAnimation(.smooth(duration: 1.0)) { displayActivity = hourlyActivity }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.0)) { animatedActivity = hourlyActivity }
         }
         .onChange(of: hourlyActivity) { _, new in
-            withAnimation(.smooth(duration: 1.0)) { displayActivity = new }
+            guard animates else { return }
+            withAnimation(.smooth(duration: 1.0)) { animatedActivity = new }
         }
     }
 }
