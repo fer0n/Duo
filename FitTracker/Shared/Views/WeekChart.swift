@@ -90,7 +90,7 @@ struct WeekChart: View {
                     y: .value("Goal", day.goalLine)
                 )
                 .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(Color.primary.opacity(0.5))
 
                 PointMark(
                     x: .value("Day", day.date, unit: .day),
@@ -98,7 +98,9 @@ struct WeekChart: View {
                 )
                 .symbolSize(30)
                 .foregroundStyle(
-                    isNextDayHighlight ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.white.opacity(0.9))
+                    isNextDayHighlight
+                        ? AnyShapeStyle(Color.accentColor)
+                        : AnyShapeStyle(Color.primary.opacity(0.8))
                 )
                 .annotation(position: .overlay) {
                     if isNextDayHighlight {

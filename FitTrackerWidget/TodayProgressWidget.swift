@@ -29,7 +29,8 @@ struct TodayProgressWidgetView: View {
             goalKm: entry.dailyGoalKm,
             isWeeklyGoalReached: entry.weeklyGoalReached,
             animates: false,
-            gaugeInset: 0
+            gaugeInset: 0,
+            compactStats: true
         )
     }
 }

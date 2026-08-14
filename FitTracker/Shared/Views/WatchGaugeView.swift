@@ -12,6 +12,8 @@ struct WatchGaugeView: View {
     var animates: Bool = true
     /// Horizontal inset around the gauge on iOS; widgets need the full width.
     var gaugeInset: CGFloat = 50
+    /// Tighter stat row for small widgets.
+    var compactStats: Bool = false
 
     private struct DisplayState: Equatable {
         var stepsFraction: Double = 0
@@ -75,7 +77,8 @@ struct WatchGaugeView: View {
                     goal: surplusFraction > 0
                         ? goalSteps.formatted()
                         : Int((surplusFraction * Double(goalSteps)).rounded())
-                        .formatted(.number.sign(strategy: .always()))
+                        .formatted(.number.sign(strategy: .always())),
+                    compact: compactStats
                 )
                 Spacer()
                     .frame(minWidth: 5, maxWidth: 8)
@@ -85,7 +88,8 @@ struct WatchGaugeView: View {
                     goal: surplusFraction > 0
                         ? goalKm.formatted(.number.precision(.fractionLength(0...1)))
                         : (surplusFraction * goalKm)
-                        .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always()))
+                        .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always())),
+                    compact: compactStats
                 )
             }
             .fontWidth(.condensed)

@@ -4,6 +4,8 @@ struct WatchStatView: View {
     let systemImage: String
     let value: String
     let goal: String
+    /// Tighter type for small widgets, where two stats share very little width.
+    var compact: Bool = false
 
     var body: some View {
         HStack(alignment: .center, spacing: 2) {
@@ -11,7 +13,7 @@ struct WatchStatView: View {
                 #if os(watchOS)
                 .font(.title3)
                 #else
-                .font(.title2)
+                .font(compact ? .subheadline : .title2)
                 #endif
                 .fontWeight(.black)
             VStack(alignment: .leading, spacing: 2) {
@@ -19,7 +21,7 @@ struct WatchStatView: View {
                     #if os(watchOS)
                     .font(.title3).monospacedDigit()
                     #else
-                    .font(.title2).monospacedDigit()
+                    .font(compact ? .subheadline : .title2).monospacedDigit()
                     #endif
                     .fontWeight(.black)
                     .minimumScaleFactor(0.01)
@@ -29,10 +31,11 @@ struct WatchStatView: View {
                     #if os(watchOS)
                     .font(.caption).monospacedDigit()
                     #else
-                    .font(.footnote).monospacedDigit()
+                    .font(compact ? .caption2 : .footnote).monospacedDigit()
                     #endif
                     .foregroundStyle(.secondary)
                     .fontWeight(.bold)
+                    .minimumScaleFactor(0.5)  // narrow widgets would otherwise clip the goal
                     .padding(.vertical, -3)
             }
             .lineLimit(1)
