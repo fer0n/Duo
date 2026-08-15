@@ -159,13 +159,6 @@
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
 		};
-		88F17A0000000000000000A1 /* Exceptions for "FitTracker" folder in "FitTracker" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 88EBB5422F5C863100A25A70 /* FitTracker */;
-		};
 		88A03F272F749EFA006740DF /* Exceptions for "FitTrackerWatch" folder in "FitTracker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -204,6 +197,13 @@
 				Shared/Views/WeekChart.swift,
 			);
 			target = 88D1A00100000000000000F3 /* FitTrackerWidget */;
+		};
+		88F17A0000000000000000A1 /* Exceptions for "FitTracker" folder in "FitTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 88EBB5422F5C863100A25A70 /* FitTracker */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -578,6 +578,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Fit;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FitTracker does not write any data to Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.octabits.FitTracker;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -613,6 +614,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Fit;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FitTracker does not write any data to Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = net.octabits.FitTracker;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -906,8 +908,9 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Fit;
+				INFOPLIST_KEY_CFBundleDisplayName = Duo;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FitTracker does not write any data to Health.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -956,8 +959,9 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FitTracker/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Fit;
+				INFOPLIST_KEY_CFBundleDisplayName = Duo;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "FitTracker does not write any data to Health.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

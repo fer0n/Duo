@@ -42,6 +42,18 @@
           }
         }
       }
+    },
+    "NSHealthUpdateUsageDescription" : {
+      "comment" : "Privacy - Health Update Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "FitTracker does not write any data to Health."
+          }
+        }
+      }
     }
   },
   "version" : "1.2"
