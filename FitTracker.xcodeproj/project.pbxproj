@@ -139,6 +139,7 @@
 			membershipExceptions = (
 				Models/ChallengeStore.swift,
 				"Shared/Extensions/Date+Challenge.swift",
+				"Shared/Extensions/Double+Format.swift",
 				Shared/Models/ChallengeSettings.swift,
 				Shared/Models/ChallengeSnapshot.swift,
 				Shared/Models/DailyEntry.swift,
@@ -148,6 +149,7 @@
 				Shared/Models/ProgressCalculator.swift,
 				Shared/Models/WeekChartModel.swift,
 				Shared/Views/ChallengeColors.swift,
+				Shared/Views/WeekChart.swift,
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
 		};

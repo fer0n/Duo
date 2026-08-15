@@ -10,6 +10,8 @@ struct WeekChart: View {
     /// Rings the goal dot of tomorrow when nothing is selected.
     var highlightNextDay: Bool = false
     var selection: Binding<Date?>?
+    /// Thinner bars, smaller labels and dots so the chart still reads in a complication.
+    var compact: Bool = false
 
     /// Matches the background behind the chart so the highlight marker can paint over the goal line.
     private var chartMaskColor: Color {
@@ -19,6 +21,9 @@ struct WeekChart: View {
         Color(.secondarySystemBackground)
         #endif
     }
+
+    private var barWidth: CGFloat { compact ? 6 : 14 }
+    private var goalDotSize: CGFloat { compact ? 16 : 30 }
 
     private var maxValue: Double {
         max(days.map(\.total).max() ?? 0, days.map(\.goalLine).max() ?? 0)
@@ -62,7 +67,7 @@ struct WeekChart: View {
                 BarMark(
                     x: .value("Day", day.date, unit: .day),
                     y: .value("Total", display),
-                    width: .fixed(14),
+                    width: .fixed(barWidth),
                     stacking: .unstacked
                 )
                 .clipShape(.capsule)
@@ -75,7 +80,7 @@ struct WeekChart: View {
                 BarMark(
                     x: .value("Day", day.date, unit: .day),
                     y: .value("Steps", display),
-                    width: .fixed(14),
+                    width: .fixed(barWidth),
                     stacking: .unstacked
                 )
                 .clipShape(.capsule)
@@ -89,21 +94,23 @@ struct WeekChart: View {
                     x: .value("Day", day.date, unit: .day),
                     y: .value("Goal", day.goalLine)
                 )
-                .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                .lineStyle(StrokeStyle(lineWidth: compact ? 1 : 1.5, dash: compact ? [3, 2] : [4, 3]))
                 .foregroundStyle(Color.primary.opacity(0.5))
 
                 PointMark(
                     x: .value("Day", day.date, unit: .day),
                     y: .value("Goal", day.goalLine)
                 )
-                .symbolSize(30)
+                .symbolSize(goalDotSize)
                 .foregroundStyle(
                     isNextDayHighlight
                         ? AnyShapeStyle(Color.accentColor)
                         : AnyShapeStyle(Color.primary.opacity(0.8))
                 )
                 .annotation(position: .overlay) {
-                    if isNextDayHighlight {
+                    // The ring needs an opaque disc behind it, which a complication
+                    // has no background to match — there the plain dot stands in.
+                    if isNextDayHighlight && !compact {
                         ZStack {
                             // Paints over the dashed goal line so it never shows
                             // through the gap between the inner dot and the ring.
@@ -128,7 +135,7 @@ struct WeekChart: View {
                 AxisValueLabel(centered: true) {
                     if let date = value.as(Date.self) {
                         Text(date, format: .dateTime.weekday(.narrow))
-                            .font(.footnote)
+                            .font(compact ? .system(size: 9) : .footnote)
                             .fontWeight(.semibold)
                             .foregroundStyle(
                                 Calendar.current.isDateInToday(date) ? Color.accentColor : Color.secondary

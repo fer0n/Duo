@@ -12,6 +12,7 @@ import SwiftUI
 struct FitTrackerWatchWidgetExtensionBundle: WidgetBundle {
     var body: some Widget {
         FitChallengeRectangularWidget()
+        FitChallengeWeekChartWidget()
         FitChallengeCircularWidget()
         FitChallengeCornerWidget()
         FitChallengeInlineWidget()
