@@ -63,11 +63,15 @@ enum ProgressCalculator {
         return (steps, km)
     }
 
-    // "8.5k steps + 4.0km"
-    static func dailyTargetText(steps: Int, km: Double) -> String {
-        let stepsText = steps >= 1000
+    // "8.5k"
+    static func stepsText(_ steps: Int) -> String {
+        steps >= 1000
             ? String(format: "%.1fk", Double(steps) / 1000)
             : "\(steps)"
-        return "\(stepsText) steps + \(String(format: "%.1f", km))km"
+    }
+
+    // "8.5k steps + 4.0km"
+    static func dailyTargetText(steps: Int, km: Double) -> String {
+        "\(stepsText(steps)) steps + \(String(format: "%.1f", km))km"
     }
 }

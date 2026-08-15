@@ -26,17 +26,21 @@ struct WeekChartWidgetView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline) {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
                 Text(entry.weekHeader)
                     .font(.headline)
                 Spacer()
                 if let projection {
-                    Text(ProgressCalculator.dailyTargetText(steps: projection.steps, km: projection.km))
-                        .font(.caption)
+                    Label(ProgressCalculator.stepsText(projection.steps), systemImage: "figure.run")
+                        .foregroundStyle(Color.accentColor)
+                    Label("\(projection.km.kmFormatted) km", systemImage: "figure.outdoor.cycle")
                         .foregroundStyle(.secondary)
                 }
             }
+            .font(.caption.weight(.bold))
+            .monospacedDigit()
+            .fontWidth(.condensed)
 
             WeekChart(
                 days: entry.weekDays,
