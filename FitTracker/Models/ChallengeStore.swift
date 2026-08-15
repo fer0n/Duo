@@ -23,8 +23,10 @@ final class ChallengeStore {
 
     @ObservationIgnored private var hasUnsavedSnapshot = false
     @ObservationIgnored private var isInitialRefresh = true
+    @ObservationIgnored let skipsHealthKit: Bool
 
     init(skipHealthKit: Bool = false) {
+        self.skipsHealthKit = skipHealthKit
         loadFromDefaults()
         ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
         if !skipHealthKit {
@@ -232,6 +234,20 @@ final class ChallengeStore {
             defaults.set(Date.todayKey(), forKey: AppGroup.hourlyDayKey)
         }
     }
+
+    #if DEBUG
+    /// Screenshot tooling: persists in-memory sample data to the app group so widgets
+    /// (which read the app group directly, not this store) show the same demo data.
+    func persistDemoSnapshotForWidgets() {
+        writeEntriesToDefaults()
+        writeHourlyToDefaults()
+        if let data = try? JSONEncoder().encode(settings) {
+            defaults.set(data, forKey: Self.settingsKey)
+        }
+        ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+    #endif
 
     // MARK: - Weekly Data
 

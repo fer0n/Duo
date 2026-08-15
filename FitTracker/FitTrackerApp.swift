@@ -8,8 +8,21 @@ import BackgroundTasks
 
 @main
 struct FitTrackerApp: App {
-    @State private var store = ChallengeStore()
+    @State private var store = Self.makeStore()
     @Environment(\.scenePhase) private var scenePhase
+
+    /// Screenshot tooling: launch with `-demoData` to fill the UI with realistic sample
+    /// data instead of real HealthKit data (see `ChallengeStore.preview()`).
+    private static func makeStore() -> ChallengeStore {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-demoData") {
+            let store = ChallengeStore.preview()
+            store.persistDemoSnapshotForWidgets()
+            return store
+        }
+        #endif
+        return ChallengeStore()
+    }
 
     init() {
         // Both must happen before the app finishes launching (Apple requirement).
