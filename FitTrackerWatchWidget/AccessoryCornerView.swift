@@ -24,10 +24,10 @@ struct AccessoryCornerView: View {
     private var curvedText: String {
         if weeklyDone { return "✓" }
         if entry.todaySteps == 0 && entry.todayKm == 0 { return "0" }
-        let km = String(format: "%.0f", entry.todayKm)
-        if entry.todaySteps == 0 { return String(format: "%.1f km", entry.todayKm) }
+        let km = entry.todayKm.formatted(.number.precision(.fractionLength(0)))
+        if entry.todaySteps == 0 { return String(localized: "\(entry.todayKm, specifier: "%.1f") km") }
         if entry.todayKm == 0 { return entry.todaySteps.formatted() }
-        let stepsK = String(format: "%.1f", Double(entry.todaySteps) / 1000)
+        let stepsK = (Double(entry.todaySteps) / 1000).formatted(.number.precision(.fractionLength(1)))
         return "\(stepsK)k+\(km)"
     }
 

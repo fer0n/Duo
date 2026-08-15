@@ -26,9 +26,9 @@ struct DailyChartView: View {
     /// Header text for the selected day's perspective, or the default projection label.
     private func headerText(selected: WeekDay?, model: WeekChartModel) -> String {
         guard let day = selected else { return model.headerLabel }
-        guard day.goalLine > 0 else { return "Daily" }
+        guard day.goalLine > 0 else { return String(localized: "Daily") }
         let pct = day.total / day.goalLine * 100
-        return "\(pct.formatted(.number.precision(.fractionLength(0))))%"
+        return String(localized: "\(pct.formatted(.number.precision(.fractionLength(0))))%")
     }
 
     var body: some View {
@@ -102,7 +102,7 @@ struct DailyChartView: View {
     }
 }
 
-#if os(watchOS)
+#if os(watchOS) && DEBUG
 #Preview {
     @Previewable @State var scenarioIndex = 0
 

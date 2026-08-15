@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSHealthShareUsageDescription" : {
+      "comment" : "Privacy - Health Share Usage Description",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liest deine Schritte und Radfahrstrecke, um dein wöchentliches TK Fit Challenge-Ziel zu verfolgen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.2"
+}

@@ -120,8 +120,10 @@ struct SettingsView: View {
                 } header: {
                     Text("Weekly Goals")
                 } footer: {
-                    Text("Steps and cycling count as alternatives — any mix that adds up to 100% "
-                            + "completes the week. Set a goal to 0 to leave that activity out.")
+                    Text("""
+                        Steps and cycling count as alternatives — any mix that adds up to 100% \
+                        completes the week. Set a goal to 0 to leave that activity out.
+                        """)
                 }
 
                 Section {
@@ -131,8 +133,10 @@ struct SettingsView: View {
                                             + "digitale-gesundheit/tk-fit/tk-fit-challenge-2077602")!
                     )
                 } footer: {
-                    Text("This app is an unofficial companion to the TK-Fit Challenge, helping you "
-                            + "track your progress toward its weekly step and cycling goals.")
+                    Text("""
+                        This app is an unofficial companion to the TK-Fit Challenge, helping you \
+                        track your progress toward its weekly step and cycling goals.
+                        """)
                 }
             }
             .tint(.accentColor)

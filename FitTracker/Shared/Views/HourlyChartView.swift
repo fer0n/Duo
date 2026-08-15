@@ -19,8 +19,8 @@ struct HourlyChartView: View {
             // Total bar (steps + km) in km color — drawn first, behind.
             ForEach(displayActivity) { item in
                 BarMark(
-                    x: .value("Hour", item.date, unit: .hour),
-                    y: .value("Activity", max(item.units, minBar)),
+                    x: .value(String(localized: "Hour"), item.date, unit: .hour),
+                    y: .value(String(localized: "Activity"), max(item.units, minBar)),
                     width: .ratio(ratio),
                     stacking: .unstacked
                 )
@@ -32,8 +32,8 @@ struct HourlyChartView: View {
             ForEach(displayActivity) { item in
                 let stepsFraction = ProgressCalculator.stepsFraction(item.steps)
                 BarMark(
-                    x: .value("Hour", item.date, unit: .hour),
-                    y: .value("Steps", stepsFraction > 0 ? max(stepsFraction, minBar) : 0),
+                    x: .value(String(localized: "Hour"), item.date, unit: .hour),
+                    y: .value(String(localized: "Steps"), stepsFraction > 0 ? max(stepsFraction, minBar) : 0),
                     width: .ratio(ratio),
                     stacking: .unstacked
                 )

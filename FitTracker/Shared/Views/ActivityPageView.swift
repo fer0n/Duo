@@ -38,7 +38,7 @@ struct ActivityPageView: View {
                 HStack {
                     Text(config.label)
                     Spacer()
-                    Text(String(format: "%.1f%%", (display.stepsFraction + display.kmFraction) * 100))
+                    Text("\((display.stepsFraction + display.kmFraction) * 100, specifier: "%.1f")%")
                         .monospacedDigit()
                         .contentTransition(.numericText())
                 }
@@ -49,7 +49,7 @@ struct ActivityPageView: View {
                 fraction: display.stepsFraction,
                 systemImage: Const.Symbol.steps,
                 value: display.steps.formatted(),
-                goal: "\(config.goalSteps.formatted()) steps",
+                goal: String(localized: "\(config.goalSteps.formatted()) steps"),
                 secondaryFraction: display.stepsFraction + display.kmFraction
             )
 
@@ -57,7 +57,7 @@ struct ActivityPageView: View {
                 fraction: display.kmFraction,
                 systemImage: Const.Symbol.cycling,
                 value: display.km.kmFormatted,
-                goal: "\(config.goalKm.kmFormatted) km",
+                goal: String(localized: "\(config.goalKm.kmFormatted) km"),
                 secondaryFraction: display.stepsFraction + display.kmFraction
             )
         }

@@ -14,8 +14,12 @@ struct GetDailyRemainingIntent: AppIntent {
         if result.percentageRemaining == 0 {
             dialog = "Daily goal complete!"
         } else {
-            let stepsText = result.remainingSteps == 0 ? "no steps" : "\(result.remainingSteps) steps"
-            let kmText = result.remainingKm == 0 ? "no cycling" : String(format: "%.1f km", result.remainingKm)
+            let stepsText = result.remainingSteps == 0
+                ? String(localized: "no steps")
+                : String(localized: "\(result.remainingSteps) steps")
+            let kmText = result.remainingKm == 0
+                ? String(localized: "no cycling")
+                : String(localized: "\(result.remainingKm, specifier: "%.1f") km")
             dialog = "\(result.percentageRemaining)% remaining — \(stepsText) and \(kmText)."
         }
         return .result(value: result, dialog: dialog)

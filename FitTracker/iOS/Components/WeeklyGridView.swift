@@ -5,7 +5,6 @@ struct WeeklyGridView: View {
     let entries: [DailyEntry]
     let startWeekday: Int
 
-    private let daySymbols = ["S", "M", "T", "W", "T", "F", "S"]
     private let weekDates: [Date]
     private let entryByKey: [String: DailyEntry]
 
@@ -57,7 +56,7 @@ struct WeeklyGridView: View {
 
     private func dayLabel(for date: Date) -> String {
         let weekday = Calendar.current.component(.weekday, from: date)
-        return daySymbols[weekday - 1]
+        return Calendar.current.veryShortWeekdaySymbols[weekday - 1]
     }
 }
 

@@ -112,7 +112,7 @@ struct WatchGaugeView: View {
     }
 }
 
-#if os(watchOS)
+#if os(watchOS) && DEBUG
 #Preview {
     @Previewable @State var scenarioIndex = 0
     @Previewable @State var store = ChallengeStore.preview(

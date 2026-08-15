@@ -59,7 +59,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         defaults.set(todayKey, forKey: Self.dailyNotifiedKey)
 
         let content = UNMutableNotificationContent()
-        content.title = "Daily Goal Reached!"
+        content.title = String(localized: "Daily Goal Reached!")
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: "dailyGoal-\(todayKey)",
@@ -93,7 +93,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         defaults.set(weekStartKey, forKey: Self.weeklyNotifiedKey)
 
         let content = UNMutableNotificationContent()
-        content.title = "Weekly Goal Reached!"
+        content.title = String(localized: "Weekly Goal Reached!")
         content.sound = .default
         let request = UNNotificationRequest(
             identifier: "weeklyGoal-\(weekStartKey)",
@@ -130,7 +130,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         guard let reminderDate = Calendar.current.date(from: components), reminderDate > .now else { return }
 
         let content = UNMutableNotificationContent()
-        content.title = "Daily Goal: \(missingPercent)% to Go"
+        content.title = String(localized: "Daily Goal: \(missingPercent)% to Go")
         content.body = Self.reminderBody(steps: missingSteps, km: missingKm)
         content.sound = .default
         let request = UNNotificationRequest(
@@ -149,10 +149,10 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     /// "That's 4,200 steps or 2.8 km" — drops whichever activity is switched off.
     private static func reminderBody(steps: Int, km: Double) -> String {
         switch (steps > 0, km > 0) {
-        case (true, true): "That's \(steps.formatted()) steps or \(km.kmFormatted) km"
-        case (true, false): "That's \(steps.formatted()) steps to go"
-        case (false, true): "That's \(km.kmFormatted) km to go"
-        case (false, false): "Almost there"
+        case (true, true): String(localized: "That's \(steps.formatted()) steps or \(km.kmFormatted) km")
+        case (true, false): String(localized: "That's \(steps.formatted()) steps to go")
+        case (false, true): String(localized: "That's \(km.kmFormatted) km to go")
+        case (false, false): String(localized: "Almost there")
         }
     }
 

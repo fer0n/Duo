@@ -110,6 +110,7 @@
 		884E38EB2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatch" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Localizable.xcstrings,
 				Models/ChallengeStore.swift,
 				Models/WeeklyStats.swift,
 				Shared/Const.swift,
@@ -139,6 +140,7 @@
 		884E38EC2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatchWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Localizable.xcstrings,
 				Models/ChallengeStore.swift,
 				Models/WeeklyStats.swift,
 				Shared/Const.swift,
@@ -181,6 +183,7 @@
 		88D1A00100000000000000FF /* Exceptions for "FitTracker" folder in "FitTrackerWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Localizable.xcstrings,
 				Shared/Const.swift,
 				"Shared/Extensions/Date+Challenge.swift",
 				"Shared/Extensions/Double+Format.swift",
@@ -440,6 +443,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				de,
 				Base,
 			);
 			mainGroup = 88EBB53A2F5C863100A25A70;

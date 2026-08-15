@@ -47,6 +47,7 @@ struct WatchHomeView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     @Previewable @State var scenarioIndex = 0
 
@@ -78,3 +79,4 @@ struct WatchHomeView: View {
             .padding(.bottom, 2)
         }
 }
+#endif

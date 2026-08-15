@@ -65,8 +65,8 @@ struct WeekChart: View {
                     ? .secondary.opacity(0.35)
                     : (day.isFuture ? .secondary.opacity(0.15) : kmBarColor)
                 BarMark(
-                    x: .value("Day", day.date, unit: .day),
-                    y: .value("Total", display),
+                    x: .value(String(localized: "Day"), day.date, unit: .day),
+                    y: .value(String(localized: "Total"), display),
                     width: .fixed(barWidth),
                     stacking: .unstacked
                 )
@@ -78,8 +78,8 @@ struct WeekChart: View {
                 let display = day.isFuture ? 0.0 : barDisplay(day.stepsFraction, min: minBarFraction)
                 let color: Color = isDimmed(day) ? .secondary.opacity(0.7) : .accentColor
                 BarMark(
-                    x: .value("Day", day.date, unit: .day),
-                    y: .value("Steps", display),
+                    x: .value(String(localized: "Day"), day.date, unit: .day),
+                    y: .value(String(localized: "Steps"), display),
                     width: .fixed(barWidth),
                     stacking: .unstacked
                 )
@@ -91,15 +91,15 @@ struct WeekChart: View {
                 let isNextDayHighlight = highlightNextDay && day.isNextDay
 
                 LineMark(
-                    x: .value("Day", day.date, unit: .day),
-                    y: .value("Goal", day.goalLine)
+                    x: .value(String(localized: "Day"), day.date, unit: .day),
+                    y: .value(String(localized: "Goal"), day.goalLine)
                 )
                 .lineStyle(StrokeStyle(lineWidth: compact ? 1 : 1.5, dash: compact ? [3, 2] : [4, 3]))
                 .foregroundStyle(Color.primary.opacity(0.5))
 
                 PointMark(
-                    x: .value("Day", day.date, unit: .day),
-                    y: .value("Goal", day.goalLine)
+                    x: .value(String(localized: "Day"), day.date, unit: .day),
+                    y: .value(String(localized: "Goal"), day.goalLine)
                 )
                 .symbolSize(goalDotSize)
                 .foregroundStyle(

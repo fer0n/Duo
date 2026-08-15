@@ -15,7 +15,7 @@ struct DailyRemainingResult: TransientAppEntity {
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
             title: "\(percentageRemaining)% remaining",
-            subtitle: "\(remainingSteps) steps · \(String(format: "%.1f", remainingKm)) km"
+            subtitle: "\(remainingSteps) steps · \(remainingKm, specifier: "%.1f") km"
         )
     }
 

@@ -115,12 +115,13 @@ struct WeekChartModel {
 
         let todayGoalFraction = max(1.0 - progressBeforeToday, 0.0) / Double(futureDaysCount + 1)
         if futureDaysCount == 0 {
-            headerLabel = "Daily"
+            headerLabel = String(localized: "Daily")
         } else if todayGoalFraction <= 0 {
-            headerLabel = "Left / day"
+            headerLabel = String(localized: "Left / day")
         } else {
             let pct = (projectedFraction - todayGoalFraction) / todayGoalFraction * 100
-            headerLabel = "\(pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always())))% / day"
+            let pctText = pct.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always()))
+            headerLabel = String(localized: "\(pctText)% / day")
         }
     }
 

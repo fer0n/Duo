@@ -1,0 +1,29 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Get daily remaining in ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Verbleibendes Tagesziel in ${applicationName} abrufen",
+              "Wie viel bleibt heute übrig in ${applicationName}"
+            ]
+          }
+        },
+        "en" : {
+          "stringSet" : {
+            "state" : "new",
+            "values" : [
+              "Get daily remaining in ${applicationName}",
+              "How much is left today in ${applicationName}"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.2"
+}
