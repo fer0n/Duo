@@ -2,6 +2,13 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(ChallengeStore.self) private var store
+    @State private var notificationsDenied = false
+
+    private var anyNotificationEnabled: Bool {
+        store.settings.notifyDailyGoal
+            || store.settings.notifyWeeklyGoal
+            || store.settings.dailyReminderEnabled
+    }
 
     private var weekdays: [(Int, String)] {
         let cal = Calendar.current
@@ -31,6 +38,14 @@ struct SettingsView: View {
         )
     }
 
+    /// `store.save()` runs before the permission prompt is answered, so scheduling has to
+    /// be retried once authorization is settled.
+    private func enableNotifications() async {
+        await NotificationManager.shared.requestAuthorization()
+        notificationsDenied = await NotificationManager.shared.isDenied()
+        await store.syncNotifications()
+    }
+
     var body: some View {
         @Bindable var store = store
         NavigationStack {
@@ -44,26 +59,20 @@ struct SettingsView: View {
                     .onChange(of: store.settings.challengeStartWeekday) { store.save() }
                 }
 
-                Section("Notifications") {
+                Section {
                     Toggle("Daily goal reached", isOn: $store.settings.notifyDailyGoal)
                         .onChange(of: store.settings.notifyDailyGoal) { _, enabled in
-                            if enabled {
-                                Task { await NotificationManager.shared.requestAuthorization() }
-                            }
+                            if enabled { Task { await enableNotifications() } }
                             store.save()
                         }
                     Toggle("Weekly goal reached", isOn: $store.settings.notifyWeeklyGoal)
                         .onChange(of: store.settings.notifyWeeklyGoal) { _, enabled in
-                            if enabled {
-                                Task { await NotificationManager.shared.requestAuthorization() }
-                            }
+                            if enabled { Task { await enableNotifications() } }
                             store.save()
                         }
                     Toggle("Remind if daily goal not reached", isOn: $store.settings.dailyReminderEnabled)
                         .onChange(of: store.settings.dailyReminderEnabled) { _, enabled in
-                            if enabled {
-                                Task { await NotificationManager.shared.requestAuthorization() }
-                            }
+                            if enabled { Task { await enableNotifications() } }
                             store.save()
                         }
                     if store.settings.dailyReminderEnabled {
@@ -73,6 +82,17 @@ struct SettingsView: View {
                             displayedComponents: .hourAndMinute
                         )
                         .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                } header: {
+                    Text("Notifications")
+                } footer: {
+                    if notificationsDenied && anyNotificationEnabled {
+                        Link(destination: URL(string: UIApplication.openSettingsURLString)!) {
+                            Label(
+                                "Notifications are turned off for Fit — enable them in iOS Settings.",
+                                systemImage: Const.Symbol.notificationsOff
+                            )
+                        }
                     }
                 }
                 .animation(.smooth, value: store.settings.dailyReminderEnabled)
@@ -105,6 +125,7 @@ struct SettingsView: View {
                 }
             }
             .tint(.accentColor)
+            .task { notificationsDenied = await NotificationManager.shared.isDenied() }
         }
     }
 }

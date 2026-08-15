@@ -5,7 +5,7 @@ import BackgroundTasks
 #endif
 
 @MainActor
-final class NotificationManager {
+final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
 
     private let defaults: UserDefaults
@@ -13,20 +13,41 @@ final class NotificationManager {
     private static let dailyNotifiedKey = "lastDailyGoalNotificationDay"
     private static let weeklyNotifiedKey = "lastWeeklyGoalNotificationWeekStart"
     private static let dailyReminderIdentifier = "dailyGoalReminder"
-    private static let reminderHandledKey = "dailyReminderHandledDay"
 
     // Must be listed in Info.plist under BGTaskSchedulerPermittedIdentifiers.
     #if os(iOS)
     static let dailyReminderTaskIdentifier = "net.octabits.FitTracker.dailyGoalReminder"
+    /// How long before the reminder fires the background task should try to refresh it.
+    private static let reminderRefreshLeadTime: TimeInterval = 30 * 60
     #endif
 
-    private init() {
+    private override init() {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
+        super.init()
+    }
+
+    /// Call once at launch so goal notifications are also shown while the app is open —
+    /// without a delegate iOS silently drops them in the foreground.
+    func becomeNotificationDelegate() {
+        UNUserNotificationCenter.current().delegate = self
+    }
+
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .sound]
     }
 
     func requestAuthorization() async {
         _ = try? await UNUserNotificationCenter.current()
             .requestAuthorization(options: [.alert, .sound])
+    }
+
+    /// True once the user has explicitly declined — used to explain why nothing arrives.
+    func isDenied() async -> Bool {
+        await UNUserNotificationCenter.current().notificationSettings()
+            .authorizationStatus == .denied
     }
 
     // MARK: - Daily goal reached
@@ -84,86 +105,80 @@ final class NotificationManager {
 
     // MARK: - Daily reminder
 
-    /// Schedules a background task to fire accurate content just before the reminder
-    /// deadline, plus a fallback notification at exactly the reminder time in case
-    /// the background task doesn't run in time.
-    func scheduleDailyReminder(hour: Int, minute: Int) async {
-        guard !isReminderHandledToday() else { return }
+    #if os(iOS)
+    /// (Re)schedules today's "goal not reached" reminder for the user's chosen time.
+    ///
+    /// Safe to call as often as progress changes: adding a request with the same
+    /// identifier replaces the pending one, so the notification always carries the
+    /// latest numbers and is never delivered before its time. `cancelDailyReminder()`
+    /// removes it as soon as the goal is reached.
+    ///
+    /// A background refresh is queued for shortly before the reminder as a backstop for
+    /// the case where no HealthKit update arrives in the final stretch of the day.
+    func scheduleDailyReminder(
+        hour: Int,
+        minute: Int,
+        missingPercent: Int,
+        missingSteps: Int,
+        missingKm: Double
+    ) async {
         guard await isAuthorized() else { return }
-
         var components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
         components.hour = hour
         components.minute = minute
         components.second = 0
         guard let reminderDate = Calendar.current.date(from: components), reminderDate > .now else { return }
 
-        // Fallback: fires at reminder time if the background task doesn't run first.
         let content = UNMutableNotificationContent()
-        content.title = "Daily Reminder"
-        content.body = "Your weekly goal may not be complete yet."
+        content.title = "Daily Goal: \(missingPercent)% to Go"
+        content.body = Self.reminderBody(steps: missingSteps, km: missingKm)
         content.sound = .default
-        let fallback = UNNotificationRequest(
+        let request = UNNotificationRequest(
             identifier: Self.dailyReminderIdentifier,
             content: content,
             trigger: UNCalendarNotificationTrigger(
-                dateMatching: DateComponents(hour: hour, minute: minute),
+                dateMatching: Calendar.current.dateComponents([.hour, .minute], from: reminderDate),
                 repeats: false
             )
         )
-        try? await UNUserNotificationCenter.current().add(fallback)
+        try? await UNUserNotificationCenter.current().add(request)
 
-        #if os(iOS)
-        // Background task: aim to run 1 hour before deadline so we can replace the
-        // fallback with accurate content. iOS may run it later; the fallback covers that.
-        let bgRequest = BGAppRefreshTaskRequest(identifier: Self.dailyReminderTaskIdentifier)
-        bgRequest.earliestBeginDate = max(reminderDate.addingTimeInterval(-3600), .now)
-        try? BGTaskScheduler.shared.submit(bgRequest)
-        #endif
+        scheduleReminderRefresh(before: reminderDate)
     }
 
-    /// Removes only the pending fallback notification (used from the background task
-    /// handler once we're about to deliver the accurate notification).
-    func cancelFallbackNotification() {
+    /// "That's 4,200 steps or 2.8 km" — drops whichever activity is switched off.
+    private static func reminderBody(steps: Int, km: Double) -> String {
+        switch (steps > 0, km > 0) {
+        case (true, true): "That's \(steps.formatted()) steps or \(km.kmFormatted) km"
+        case (true, false): "That's \(steps.formatted()) steps to go"
+        case (false, true): "That's \(km.kmFormatted) km to go"
+        case (false, false): "Almost there"
+        }
+    }
+
+    private func scheduleReminderRefresh(before reminderDate: Date) {
+        let earliestBeginDate = reminderDate.addingTimeInterval(-Self.reminderRefreshLeadTime)
+        guard earliestBeginDate > .now else { return }
+        let request = BGAppRefreshTaskRequest(identifier: Self.dailyReminderTaskIdentifier)
+        request.earliestBeginDate = earliestBeginDate
+        try? BGTaskScheduler.shared.submit(request)
+    }
+    #endif
+
+    /// Removes the pending reminder and its background refresh. Call when the daily or
+    /// weekly goal is reached, or when the reminder is switched off.
+    func cancelDailyReminder() {
         UNUserNotificationCenter.current().removePendingNotificationRequests(
             withIdentifiers: [Self.dailyReminderIdentifier]
         )
-    }
-
-    /// Removes the fallback notification and cancels the background task.
-    /// Call when the daily or weekly goal is reached during normal app operation.
-    func cancelDailyReminder() {
-        cancelFallbackNotification()
         #if os(iOS)
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.dailyReminderTaskIdentifier)
         #endif
     }
 
-    /// Sends an immediate notification with the accurate remaining percentage.
-    /// Called from the background task after fetching fresh HealthKit data.
-    func sendAccurateDailyReminder(missingPercent: Int, missingSteps: Int, missingKm: Double) async {
-        guard await isAuthorized() else { return }
-        let content = UNMutableNotificationContent()
-        content.title = "Daily Goal: \(missingPercent)% to Go"
-        content.body = "That's \(missingSteps.formatted()) steps or \(String(format: "%.1f", missingKm)) km"
-        content.sound = .default
-        let request = UNNotificationRequest(
-            identifier: Self.dailyReminderIdentifier,
-            content: content,
-            trigger: nil
-        )
-        try? await UNUserNotificationCenter.current().add(request)
-    }
-
-    func isReminderHandledToday() -> Bool {
-        defaults.string(forKey: Self.reminderHandledKey) == Date.todayKey()
-    }
-
-    func markReminderHandled() {
-        defaults.set(Date.todayKey(), forKey: Self.reminderHandledKey)
-    }
-
     private func isAuthorized() async -> Bool {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        return settings.authorizationStatus == .authorized
+        let status = await UNUserNotificationCenter.current().notificationSettings()
+            .authorizationStatus
+        return status == .authorized || status == .provisional
     }
 }

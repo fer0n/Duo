@@ -157,6 +157,13 @@
 			);
 			target = 884E38C02F5C8E9E00404F42 /* FitTrackerWatchWidget */;
 		};
+		88F17A0000000000000000A1 /* Exceptions for "FitTracker" folder in "FitTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 88EBB5422F5C863100A25A70 /* FitTracker */;
+		};
 		88A03F272F749EFA006740DF /* Exceptions for "FitTrackerWatch" folder in "FitTracker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -225,6 +232,7 @@
 		88EBB5452F5C863100A25A70 /* FitTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				88F17A0000000000000000A1 /* Exceptions for "FitTracker" folder in "FitTracker" target */,
 				884E38EB2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatch" target */,
 				884E38EC2F5C8F0000404F42 /* Exceptions for "FitTracker" folder in "FitTrackerWatchWidget" target */,
 				88D1A00100000000000000FF /* Exceptions for "FitTracker" folder in "FitTrackerWidget" target */,
@@ -893,6 +901,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitTracker/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Fit;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -942,6 +951,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitTracker/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Fit;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Reads your steps and cycling distance to track your TK Fit Challenge weekly goal.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

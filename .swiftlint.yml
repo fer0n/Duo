@@ -5,6 +5,7 @@ opt_in_rules:
 # Exclude build and dependency folders
 excluded:
   - build
+  - .claude  # agent worktrees: linting another branch's copy would fail this build
   - Carthage
   - Pods
   - .build

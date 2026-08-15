@@ -8,5 +8,6 @@ enum Const {
         static let checkmark = "checkmark"
         static let calendar = "calendar"
         static let gear = "gear"
+        static let notificationsOff = "bell.slash"
     }
 }

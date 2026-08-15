@@ -12,6 +12,9 @@ struct FitTrackerApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        // Both must happen before the app finishes launching (Apple requirement).
+        NotificationManager.shared.becomeNotificationDelegate()
+
         // Register before the first runloop tick (Apple requirement).
         // The handler creates its own store instance since this closure may be
         // called when the app is launched in the background.

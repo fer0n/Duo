@@ -81,15 +81,26 @@ final class ChallengeStore {
     // MARK: - Notifications
 
     /// Combined daily progress (0…∞) and whether the daily goal is considered reached.
-    private var dailyProgress: (combined: Double, reached: Bool) {
-        let goal = dailyGoal
-        let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
-        let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
+    /// A goal of 0 disables that activity, so it contributes nothing (see `ProgressCalculator`).
+    private func dailyProgress(goal: (steps: Int, km: Double)) -> (combined: Double, reached: Bool) {
+        let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 0
+        let kmFraction = goal.km > 0 ? todayKm / goal.km : 0
         let combined = stepsFraction + kmFraction
         return (combined, (goal.steps > 0 || goal.km > 0) && combined >= 1.0)
     }
 
+    /// Brings pending notifications in line with the current data and settings.
+    /// Call after anything that can change the outcome — settings edits included, since
+    /// those leave the HealthKit data untouched and so don't trigger a refresh.
+    func syncNotifications() async {
+        let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
+        await checkGoalNotifications(weekStart: weekStart)
+    }
+
+    /// Notifications are owned by the iOS app only — the watch app shares this store and
+    /// would otherwise schedule the same alerts a second time.
     private func checkGoalNotifications(weekStart: Date) async {
+        #if os(iOS)
         let notifier = NotificationManager.shared
         let weekly = weeklyStats
         let weeklyGoalReached = weekly.progress >= 1.0
@@ -112,80 +123,40 @@ final class ChallengeStore {
         // the daily reminder after the weekly goal has already been reached.
         let weeklyDone = weeklyGoalReached || notifier.isWeeklyGoalMarkedDone(weekKey: weekKey)
 
-        let (_, dailyGoalReached) = dailyProgress
+        let goal = dailyGoal
+        let (combinedProgress, dailyGoalReached) = dailyProgress(goal: goal)
 
         if settings.notifyDailyGoal && !weeklyDone && dailyGoalReached {
             await notifier.sendDailyGoalNotificationIfNeeded()
         }
 
-        if settings.dailyReminderEnabled {
-            if dailyGoalReached || weeklyDone {
-                notifier.cancelDailyReminder()
-            } else {
-                await notifier.scheduleDailyReminder(
-                    hour: settings.dailyReminderHour,
-                    minute: settings.dailyReminderMinute
-                )
-            }
-        }
-    }
-
-    #if os(iOS)
-    /// Called by the BGAppRefreshTask registered in FitTrackerApp.
-    /// Cancels the fallback notification, fetches fresh HealthKit data, then sends
-    /// an accurate "X% to go" notification if the goal still isn't met.
-    /// If the reminder deadline has already passed the fallback will have fired and
-    /// we do nothing beyond updating the widget.
-    func handleDailyReminderTask(_ task: BGAppRefreshTask) async {
-        let notifier = NotificationManager.shared
-
-        // Prevent checkGoalNotifications (called inside refreshFromHealthKit) from
-        // rescheduling the reminder for today now that we are handling it.
-        notifier.markReminderHandled()
-        notifier.cancelFallbackNotification()
-
-        task.expirationHandler = { task.setTaskCompleted(success: false) }
-
-        // If we're past the reminder deadline the fallback has already fired.
-        // Still refresh so widgets show the latest overshoot.
-        let hour = settings.dailyReminderHour
-        let minute = settings.dailyReminderMinute
-        var comps = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        comps.hour = hour
-        comps.minute = minute
-        let deadlinePassed = Calendar.current.date(from: comps).map { $0 <= .now } ?? false
-
-        let weekStart = Calendar.current.currentWeekStart(startingOn: settings.challengeStartWeekday)
-        await refreshFromHealthKit()  // updates entries + widgets; won't reschedule reminder
-
-        if deadlinePassed {
-            task.setTaskCompleted(success: true)
+        let hasGoal = goal.steps > 0 || goal.km > 0
+        guard settings.dailyReminderEnabled, hasGoal, !dailyGoalReached, !weeklyDone else {
+            notifier.cancelDailyReminder()
             return
         }
 
-        // Check goals with the just-fetched data.
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let weekKey = formatter.string(from: weekStart)
-        let weeklyDone = weeklyStats.progress >= 1.0 || notifier.isWeeklyGoalMarkedDone(weekKey: weekKey)
-        if weeklyDone {
-            task.setTaskCompleted(success: true)
-            return
-        }
-
-        let (combinedProgress, dailyGoalReached) = dailyProgress
-        if dailyGoalReached {
-            task.setTaskCompleted(success: true)
-            return
-        }
-
+        // Re-scheduling replaces the pending reminder, so its numbers stay current
+        // right up to the moment it fires.
         let missingFraction = max(0.0, 1.0 - combinedProgress)
-        let goal = dailyGoal
-        await notifier.sendAccurateDailyReminder(
+        await notifier.scheduleDailyReminder(
+            hour: settings.dailyReminderHour,
+            minute: settings.dailyReminderMinute,
             missingPercent: Int((missingFraction * 100).rounded()),
             missingSteps: Int((missingFraction * Double(goal.steps)).rounded()),
             missingKm: missingFraction * goal.km
         )
+        #endif
+    }
+
+    #if os(iOS)
+    /// Called by the BGAppRefreshTask registered in FitTrackerApp, shortly before the
+    /// reminder is due. Fetches fresh HealthKit data, then either cancels the pending
+    /// reminder (goal reached in the meantime) or updates it with accurate numbers.
+    func handleDailyReminderTask(_ task: BGAppRefreshTask) async {
+        task.expirationHandler = { task.setTaskCompleted(success: false) }
+        await refreshFromHealthKit()  // updates entries + widgets
+        await syncNotifications()     // …even if the data was unchanged
         task.setTaskCompleted(success: true)
     }
     #endif
@@ -204,13 +175,8 @@ final class ChallengeStore {
             notifier.markWeeklyGoalSeen(weekStartKey: formatter.string(from: weekStart))
         }
 
-        let goal = dailyGoal
-        if goal.steps > 0 || goal.km > 0 {
-            let stepsFraction = goal.steps > 0 ? Double(todaySteps) / Double(goal.steps) : 1.0
-            let kmFraction = goal.km > 0 ? todayKm / goal.km : 1.0
-            if stepsFraction + kmFraction >= 1.0 {
-                notifier.markDailyGoalSeen()
-            }
+        if dailyProgress(goal: dailyGoal).reached {
+            notifier.markDailyGoalSeen()
         }
     }
 
@@ -245,9 +211,12 @@ final class ChallengeStore {
             defaults.set(data, forKey: Self.settingsKey)
         }
         ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
-        // Cancel any pending reminder so checkGoalNotifications can reschedule with updated settings.
-        NotificationManager.shared.cancelDailyReminder()
-        Task { await refreshFromHealthKit() }
+        Task {
+            await refreshFromHealthKit()
+            // Always re-sync: a settings change alone (new goal, new reminder time)
+            // leaves the HealthKit data unchanged, so the refresh may skip the check.
+            await syncNotifications()
+        }
         WidgetCenter.shared.reloadAllTimelines()
     }
 
