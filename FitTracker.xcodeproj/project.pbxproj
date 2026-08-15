@@ -111,6 +111,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/ChallengeStore.swift,
+				Models/WeeklyStats.swift,
 				Shared/Const.swift,
 				"Shared/Extensions/Date+Challenge.swift",
 				"Shared/Extensions/Double+Format.swift",
@@ -139,6 +140,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/ChallengeStore.swift,
+				Models/WeeklyStats.swift,
 				Shared/Const.swift,
 				"Shared/Extensions/Date+Challenge.swift",
 				"Shared/Extensions/Double+Format.swift",

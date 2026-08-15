@@ -6,15 +6,6 @@ import SwiftUI
 import BackgroundTasks
 #endif
 
-struct WeeklyStats {
-    let entries: [DailyEntry]
-    let steps: Int
-    let km: Double
-    let stepsFraction: Double
-    let kmFraction: Double
-    let progress: Double
-}
-
 @Observable
 @MainActor
 final class ChallengeStore {
