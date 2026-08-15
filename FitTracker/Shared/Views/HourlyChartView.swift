@@ -1,8 +1,6 @@
 import SwiftUI
 import Charts
 
-let kmBarColor = Color.accentColor.mix(with: .black, by: 0.2)
-
 struct HourlyChartView: View {
     let hourlyActivity: [HourlyActivity]
     /// Widgets render a single static snapshot — they must not start from the empty state.
