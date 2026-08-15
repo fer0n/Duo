@@ -1,22 +1,36 @@
 import SwiftUI
 import WidgetKit
 
-/// Inline complication: weekly percentage plus what's still left for today.
+/// Inline complication: weekly percentage plus today's tally, e.g. "65% • 4.2K + 2.6KM".
 struct AccessoryInlineView: View {
     let entry: FitChallengeEntry
 
+    private func stepsText(_ steps: Int) -> String {
+        steps >= 1000
+            ? "\((Double(steps) / 1000).formatted(.number.precision(.fractionLength(0...1))))K"
+            : "\(steps)"
+    }
+
+    private func kmText(_ km: Double) -> String {
+        "\(km.formatted(.number.precision(.fractionLength(0...1))))KM"
+    }
+
     private var text: String {
         let percent = Int((entry.weeklyProgress * 100).rounded())
-        guard entry.weeklyProgress < 1.0 else { return "\(percent)% · done" }
-        guard entry.dailyTargetSteps > 0 || entry.dailyTargetKm > 0 else { return "\(percent)%" }
-        let remainingSteps = max(entry.dailyTargetSteps - entry.todaySteps, 0)
-        let remainingKm = max(entry.dailyTargetKm - entry.todayKm, 0)
-        return "\(percent)% · \(ProgressCalculator.dailyTargetText(steps: remainingSteps, km: remainingKm)) left"
+        guard entry.todaySteps > 0 || entry.todayKm > 0 else { return "\(percent)%" }
+        return "\(percent)% • \(stepsText(entry.todaySteps)) + \(kmText(entry.todayKm))"
     }
 
     var body: some View {
-        Label(text, systemImage: "figure.run")
-            .widgetURL(URL(string: "fittracker://open"))
+        // Label is the one shape inline complications render with a symbol.
+        if entry.weeklyProgress >= 1.0 {
+            Label("Done", systemImage: "checkmark")
+                .widgetURL(URL(string: "fittracker://open"))
+                .labelStyle(.titleOnly)
+        } else {
+            Text(text)
+                .widgetURL(URL(string: "fittracker://open"))
+        }
     }
 }
 

@@ -10,8 +10,8 @@ struct AccessoryCircularView: View {
             Image(systemName: "figure.run")
                 .font(.caption2)
         } currentValueLabel: {
-            Text("\(Int(entry.weeklyProgress * 100))%")
-                .font(.system(size: 11, weight: .semibold))
+            Text("\(Int(entry.weeklyProgress * 100))")
+                .fontWeight(.bold)
                 .monospacedDigit()
         }
         .gaugeStyle(.accessoryCircularCapacity)

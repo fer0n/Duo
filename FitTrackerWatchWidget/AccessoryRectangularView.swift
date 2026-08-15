@@ -1,39 +1,90 @@
 import SwiftUI
 import WidgetKit
 
-/// Nike face complication: segmented progress bar + daily target text.
+/// Nike face complication: weekly progress bar + today's steps and cycling
+/// against their daily targets.
 struct AccessoryRectangularView: View {
     let entry: FitChallengeEntry
 
+    private func thousands(_ steps: Int) -> String {
+        (Double(steps) / 1000).formatted(.number.precision(.fractionLength(0...1)))
+    }
+
+    private func km(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(0...1)))
+    }
+
+    /// A goal of 0 means nothing is left to do, so it counts as complete.
+    private func percent(_ value: Double, of target: Double) -> Int {
+        guard target > 0 else { return 100 }
+        return Int((value / target * 100).rounded())
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
-            // Header row
-            HStack(alignment: .firstTextBaseline) {
-                Text("FitChallenge")
-                    .font(.caption2)
-                    .fontWeight(.semibold)
-                    .widgetAccentable()
-                Spacer()
-                Text("\(Int(entry.weeklyProgress * 100))%")
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
-
-            // Segmented progress bar
             ComplicationProgressBar(
                 stepsContrib: entry.stepsContrib,
                 cyclingContrib: entry.cyclingContrib
             )
 
-            // Daily target
-            Text(entry.dailyTargetText)
-                .font(.caption2)
-                .foregroundStyle(.primary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+            StatRow(
+                systemImage: "figure.run",
+                current: thousands(entry.todaySteps),
+                target: thousands(entry.dailyTargetSteps),
+                unit: "k",
+                percent: percent(Double(entry.todaySteps), of: Double(entry.dailyTargetSteps))
+            )
+
+            StatRow(
+                systemImage: "figure.outdoor.cycle",
+                current: km(entry.todayKm),
+                target: km(entry.dailyTargetKm),
+                unit: "km",
+                percent: percent(entry.todayKm, of: entry.dailyTargetKm)
+            )
         }
         .padding(.horizontal, 2)
         .widgetURL(URL(string: "fittracker://open"))
+    }
+}
+
+// MARK: - Stat Row
+
+/// One activity: symbol, today's value against its target, and how far along that is.
+private struct StatRow: View {
+    let systemImage: String
+    let current: String
+    let target: String
+    let unit: String
+    let percent: Int
+
+    /// Separator stays dim so the two numbers carry the row.
+    private var value: Text {
+        Text(current)
+            + Text("/").foregroundStyle(.secondary)
+            + Text(target)
+            + Text(unit)
+    }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 2) {
+            Image(systemName: systemImage)
+                // figure.outdoor.cycle is wider than figure.run — a fixed column
+                // keeps both values starting at the same x.
+                .frame(width: 25)
+            value
+                .font(.caption2)
+                .fontWeight(.semibold)
+                .widgetAccentable()
+
+            Spacer()
+
+            Text("\(percent)%")
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
     }
 }
 
