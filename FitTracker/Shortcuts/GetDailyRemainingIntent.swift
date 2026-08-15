@@ -1,42 +1,6 @@
 import AppIntents
 import Foundation
 
-// MARK: - Result Entity
-
-struct DailyRemainingResult: TransientAppEntity {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Daily Remaining"
-
-    @Property(title: "Remaining Steps")
-    var remainingSteps: Int
-
-    @Property(title: "Remaining Kilometers")
-    var remainingKm: Double
-
-    @Property(title: "Percentage Remaining")
-    var percentageRemaining: Int
-
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(
-            title: "\(percentageRemaining)% remaining",
-            subtitle: "\(remainingSteps) steps · \(String(format: "%.1f", remainingKm)) km"
-        )
-    }
-
-    init() {
-        remainingSteps = 0
-        remainingKm = 0.0
-        percentageRemaining = 0
-    }
-
-    init(remainingSteps: Int, remainingKm: Double, percentageRemaining: Int) {
-        self.remainingSteps = remainingSteps
-        self.remainingKm = remainingKm
-        self.percentageRemaining = percentageRemaining
-    }
-}
-
-// MARK: - Intent
-
 struct GetDailyRemainingIntent: AppIntent {
     static var title: LocalizedStringResource = "Get Daily Remaining"
     static var description = IntentDescription(
@@ -105,22 +69,6 @@ struct GetDailyRemainingIntent: AppIntent {
             remainingSteps: Int((missingFraction * Double(goal.steps)).rounded()),
             remainingKm: (missingFraction * goal.km * 10).rounded() / 10,
             percentageRemaining: Int((missingFraction * 100).rounded())
-        )
-    }
-}
-
-// MARK: - Shortcuts Provider
-
-struct FitTrackerShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: GetDailyRemainingIntent(),
-            phrases: [
-                "Get daily remaining in \(.applicationName)",
-                "How much is left today in \(.applicationName)"
-            ],
-            shortTitle: "Daily Remaining",
-            systemImageName: "figure.walk.circle"
         )
     }
 }
