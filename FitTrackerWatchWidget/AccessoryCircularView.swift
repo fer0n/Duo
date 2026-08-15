@@ -7,7 +7,7 @@ struct AccessoryCircularView: View {
 
     var body: some View {
         Gauge(value: entry.weeklyProgress, in: 0...1) {
-            Image(systemName: "figure.run")
+            Image(systemName: Const.Symbol.steps)
                 .font(.caption2)
         } currentValueLabel: {
             Text("\(Int(entry.weeklyProgress * 100))")

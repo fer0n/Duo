@@ -44,5 +44,5 @@ struct WatchStatView: View {
 }
 
 #Preview {
-    WatchStatView(systemImage: "figure.run", value: "4,200", goal: "10,000")
+    WatchStatView(systemImage: Const.Symbol.steps, value: "4,200", goal: "10,000")
 }

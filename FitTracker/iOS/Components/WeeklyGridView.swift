@@ -41,8 +41,8 @@ struct WeeklyGridView: View {
                         .overlay {
                             if let e, e.steps > 0 || e.cyclingKm > 0 {
                                 Image(systemName: e.cyclingKm > 0 && e.steps == 0
-                                        ? "figure.outdoor.cycle"
-                                        : "figure.walk")
+                                        ? Const.Symbol.cycling
+                                        : Const.Symbol.walking)
                                     .font(.system(size: 14))
                                     .foregroundStyle(.white)
                             }

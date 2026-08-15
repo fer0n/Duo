@@ -28,7 +28,7 @@ struct AccessoryRectangularView: View {
             )
 
             StatRow(
-                systemImage: "figure.run",
+                systemImage: Const.Symbol.steps,
                 current: thousands(entry.todaySteps),
                 target: thousands(entry.dailyTargetSteps),
                 unit: "k",
@@ -36,7 +36,7 @@ struct AccessoryRectangularView: View {
             )
 
             StatRow(
-                systemImage: "figure.outdoor.cycle",
+                systemImage: Const.Symbol.cycling,
                 current: km(entry.todayKm),
                 target: km(entry.dailyTargetKm),
                 unit: "km",

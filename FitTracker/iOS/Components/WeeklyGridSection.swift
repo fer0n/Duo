@@ -6,7 +6,7 @@ struct WeeklyGridSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("This Week", systemImage: "calendar")
+            Label("This Week", systemImage: Const.Symbol.calendar)
                 .font(.headline)
             WeeklyGridView(entries: entries, startWeekday: startWeekday)
         }

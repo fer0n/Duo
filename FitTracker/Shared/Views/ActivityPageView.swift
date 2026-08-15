@@ -47,7 +47,7 @@ struct ActivityPageView: View {
 
             ActivityRow(
                 fraction: display.stepsFraction,
-                systemImage: "figure.run",
+                systemImage: Const.Symbol.steps,
                 value: display.steps.formatted(),
                 goal: "\(config.goalSteps.formatted()) steps",
                 secondaryFraction: display.stepsFraction + display.kmFraction
@@ -55,7 +55,7 @@ struct ActivityPageView: View {
 
             ActivityRow(
                 fraction: display.kmFraction,
-                systemImage: "figure.outdoor.cycle",
+                systemImage: Const.Symbol.cycling,
                 value: display.km.kmFormatted,
                 goal: "\(config.goalKm.kmFormatted) km",
                 secondaryFraction: display.stepsFraction + display.kmFraction

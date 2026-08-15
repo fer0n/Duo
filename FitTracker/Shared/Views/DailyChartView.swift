@@ -52,14 +52,14 @@ struct DailyChartView: View {
             if let day = selected {
                 HStack(spacing: 0) {
                     WatchStatView(
-                        systemImage: "figure.run",
+                        systemImage: Const.Symbol.steps,
                         value: day.steps.formatted(),
                         goal: day.goalSteps.formatted()
                     )
                     Spacer()
                         .frame(minWidth: 5, maxWidth: 8)
                     WatchStatView(
-                        systemImage: "figure.outdoor.cycle",
+                        systemImage: Const.Symbol.cycling,
                         value: day.km.kmFormatted,
                         goal: day.goalKm.kmFormatted
                     )
@@ -68,14 +68,14 @@ struct DailyChartView: View {
             } else if m.hasFutureDays && (m.projSteps > 0 || m.projKm > 0) {
                 HStack(spacing: 0) {
                     WatchStatView(
-                        systemImage: "figure.run",
+                        systemImage: Const.Symbol.steps,
                         value: m.projSteps.formatted(),
                         goal: m.deltaSteps.formatted(.number.sign(strategy: .always()))
                     )
                     Spacer()
                         .frame(minWidth: 5, maxWidth: 8)
                     WatchStatView(
-                        systemImage: "figure.outdoor.cycle",
+                        systemImage: Const.Symbol.cycling,
                         value: m.projKm.kmFormatted,
                         goal: m.deltaKm.formatted(.number.precision(.fractionLength(1)).sign(strategy: .always()))
                     )

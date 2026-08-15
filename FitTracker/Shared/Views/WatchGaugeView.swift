@@ -45,7 +45,7 @@ struct WatchGaugeView: View {
             ) { size in
                 ZStack {
                     if isWeeklyGoalReached {
-                        Image(systemName: "checkmark")
+                        Image(systemName: Const.Symbol.checkmark)
                             .font(.system(size: size * 0.25, weight: .black))
                             .foregroundStyle(Color.accentColor.gradient)
                             .transition(.blurReplace)
@@ -75,7 +75,7 @@ struct WatchGaugeView: View {
             if showStats {
                 HStack(spacing: 0) {
                     WatchStatView(
-                        systemImage: "figure.run",
+                        systemImage: Const.Symbol.steps,
                         value: display.steps.formatted(),
                         goal: surplusFraction > 0
                             ? goalSteps.formatted()
@@ -86,7 +86,7 @@ struct WatchGaugeView: View {
                     Spacer()
                         .frame(minWidth: 5, maxWidth: 8)
                     WatchStatView(
-                        systemImage: "figure.outdoor.cycle",
+                        systemImage: Const.Symbol.cycling,
                         value: display.km.kmFormatted,
                         goal: surplusFraction > 0
                             ? goalKm.formatted(.number.precision(.fractionLength(0...1)))

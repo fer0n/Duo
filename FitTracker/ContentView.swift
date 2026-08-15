@@ -4,9 +4,9 @@ struct ContentView: View {
     var body: some View {
         TabView {
             HomeView()
-                .tabItem { Label("Stats", systemImage: "figure.run") }
+                .tabItem { Label("Stats", systemImage: Const.Symbol.steps) }
             SettingsView()
-                .tabItem { Label("Settings", systemImage: "gear") }
+                .tabItem { Label("Settings", systemImage: Const.Symbol.gear) }
         }
         .safeAreaBar(edge: .top) {
             Color.black.opacity(0.0000001).frame(width: 1, height: 1)

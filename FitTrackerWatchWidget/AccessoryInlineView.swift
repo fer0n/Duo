@@ -24,7 +24,7 @@ struct AccessoryInlineView: View {
     var body: some View {
         // Label is the one shape inline complications render with a symbol.
         if entry.weeklyProgress >= 1.0 {
-            Label("Done", systemImage: "checkmark")
+            Label("Done", systemImage: Const.Symbol.checkmark)
                 .widgetURL(URL(string: "fittracker://open"))
                 .labelStyle(.titleOnly)
         } else {
