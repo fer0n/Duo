@@ -27,6 +27,9 @@ struct FitWidgetEntry: TimelineEntry {
     // Today by hour
     let hourly: [HourlyActivity]
 
+    // Small widget configuration
+    var showStats: Bool = true
+
     init(date: Date, snapshot: ChallengeSnapshot) {
         let goal = snapshot.dailyTarget
         let chart = WeekChartModel(snapshot: snapshot)

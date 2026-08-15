@@ -108,7 +108,7 @@ struct WeekChart: View {
                         : AnyShapeStyle(Color.primary.opacity(0.8))
                 )
                 .annotation(position: .overlay) {
-                    // The ring needs an opaque disc behind it, which a complication
+                    // Both markers need an opaque disc behind them, which a complication
                     // has no background to match — there the plain dot stands in.
                     if isNextDayHighlight && !compact {
                         ZStack {
@@ -124,6 +124,11 @@ struct WeekChart: View {
                                 .stroke(Color.accentColor, lineWidth: 1.5)
                                 .frame(width: 10, height: 10)
                         }
+                    } else if day.goalReached && !compact {
+                        // A hole punched through the dot marks the goal as hit.
+                        Circle()
+                            .fill(chartMaskColor)
+                            .frame(width: 3, height: 3)
                     }
                 }
             }

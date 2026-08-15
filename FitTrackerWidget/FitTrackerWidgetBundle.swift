@@ -7,6 +7,5 @@ struct FitTrackerWidgetBundle: WidgetBundle {
         TodayProgressWidget()
         WeekChartWidget()
         HourlyActivityWidget()
-        WeeklyTotalsWidget()
     }
 }

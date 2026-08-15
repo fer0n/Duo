@@ -16,6 +16,7 @@ struct WeekDay: Identifiable, Equatable {
     let isNextDay: Bool
 
     var total: Double { stepsFraction + kmFraction }
+    var goalReached: Bool { goalLine > 0 && !isFuture && total >= goalLine }
 }
 
 /// Everything the weekly chart needs, derived from the week's entries.

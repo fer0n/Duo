@@ -14,6 +14,8 @@ struct WatchGaugeView: View {
     var gaugeInset: CGFloat = 50
     /// Tighter stat row for small widgets.
     var compactStats: Bool = false
+    /// Hides the steps/km stat row entirely, leaving just the gauge.
+    var showStats: Bool = true
 
     private struct DisplayState: Equatable {
         var stepsFraction: Double = 0
@@ -70,29 +72,31 @@ struct WatchGaugeView: View {
             .padding(.horizontal, gaugeInset)
             #endif
 
-            HStack(spacing: 0) {
-                WatchStatView(
-                    systemImage: "figure.run",
-                    value: display.steps.formatted(),
-                    goal: surplusFraction > 0
-                        ? goalSteps.formatted()
-                        : Int((surplusFraction * Double(goalSteps)).rounded())
-                        .formatted(.number.sign(strategy: .always())),
-                    compact: compactStats
-                )
-                Spacer()
-                    .frame(minWidth: 5, maxWidth: 8)
-                WatchStatView(
-                    systemImage: "figure.outdoor.cycle",
-                    value: display.km.kmFormatted,
-                    goal: surplusFraction > 0
-                        ? goalKm.formatted(.number.precision(.fractionLength(0...1)))
-                        : (surplusFraction * goalKm)
-                        .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always())),
-                    compact: compactStats
-                )
+            if showStats {
+                HStack(spacing: 0) {
+                    WatchStatView(
+                        systemImage: "figure.run",
+                        value: display.steps.formatted(),
+                        goal: surplusFraction > 0
+                            ? goalSteps.formatted()
+                            : Int((surplusFraction * Double(goalSteps)).rounded())
+                            .formatted(.number.sign(strategy: .always())),
+                        compact: compactStats
+                    )
+                    Spacer()
+                        .frame(minWidth: 5, maxWidth: 8)
+                    WatchStatView(
+                        systemImage: "figure.outdoor.cycle",
+                        value: display.km.kmFormatted,
+                        goal: surplusFraction > 0
+                            ? goalKm.formatted(.number.precision(.fractionLength(0...1)))
+                            : (surplusFraction * goalKm)
+                            .formatted(.number.precision(.fractionLength(0...1)).sign(strategy: .always())),
+                        compact: compactStats
+                    )
+                }
+                .fontWidth(.condensed)
             }
-            .fontWidth(.condensed)
         }
         #if os(watchOS)
         .padding(.vertical, -12)

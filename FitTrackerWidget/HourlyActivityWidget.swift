@@ -19,18 +19,30 @@ struct HourlyActivityWidget: Widget {
 struct HourlyActivityWidgetView: View {
     let entry: FitWidgetEntry
 
+    private var todayPercent: Int {
+        Int((entry.dailyStepsFraction + entry.dailyKmFraction) * 100)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text("Hourly")
-                    .font(.headline)
+        VStack(alignment: .leading, spacing: 15) {
+            HStack(alignment: .firstTextBaseline, spacing: 15) {
+                Text("\(todayPercent)%")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .fontWidth(.compressed)
                 Spacer()
-                Label(entry.todaySteps.formatted(), systemImage: "figure.run")
-                    .foregroundStyle(Color.accentColor)
-                Label("\(entry.todayKm.kmFormatted) km", systemImage: "figure.outdoor.cycle")
-                    .foregroundStyle(kmBarColor)
+                HStack(spacing: 2) {
+                    Image(systemName: "figure.run")
+                    Text(entry.todaySteps.formatted())
+                }
+                .foregroundStyle(.secondary)
+                HStack(spacing: 2) {
+                    Image(systemName: "figure.outdoor.cycle")
+                    Text("\(entry.todayKm.kmFormatted) km")
+                }
+                .foregroundStyle(.secondary)
             }
-            .font(.caption.weight(.bold))
+            .font(.headline.weight(.bold))
             .monospacedDigit()
             .fontWidth(.condensed)
 
