@@ -123,6 +123,17 @@ struct SettingsView: View {
                     Text("Steps and cycling count as alternatives — any mix that adds up to 100% "
                             + "completes the week. Set a goal to 0 to leave that activity out.")
                 }
+
+                Section {
+                    Link(
+                        "TK-Fit Challenge",
+                        destination: URL(string: "https://www.tk.de/techniker/gesundheit-foerdern/"
+                                            + "digitale-gesundheit/tk-fit/tk-fit-challenge-2077602")!
+                    )
+                } footer: {
+                    Text("This app is an unofficial companion to the TK-Fit Challenge, helping you "
+                            + "track your progress toward its weekly step and cycling goals.")
+                }
             }
             .tint(.accentColor)
             .task { notificationsDenied = await NotificationManager.shared.isDenied() }
