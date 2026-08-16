@@ -15,6 +15,9 @@ enum AppGroup {
     /// Day the cached hourly data belongs to, so widgets don't show yesterday's hours.
     static let hourlyDayKey = "hourlyActivityDay"
 
+    /// Kept out of the settings blob so adding it can't break decoding of existing data.
+    static let hasSeenWelcomeKey = "hasSeenWelcome"
+
     nonisolated(unsafe) static let defaults = UserDefaults(suiteName: id) ?? .standard
 }
 

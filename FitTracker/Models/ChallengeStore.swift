@@ -29,15 +29,22 @@ final class ChallengeStore {
         self.skipsHealthKit = skipHealthKit
         loadFromDefaults()
         ProgressCalculator.storeGoals(steps: settings.stepGoal, km: settings.kmGoal)
-        if !skipHealthKit {
+        if !skipHealthKit && AppGroup.defaults.bool(forKey: AppGroup.hasSeenWelcomeKey) {
             Task { await setupHealthKit() }
         }
     }
 
     // MARK: - HealthKit
 
+    /// On a fresh install the welcome sheet owns the first prompt — touching HealthKit before
+    /// that both hides the prompt behind the sheet and stalls the later request.
     private func setupHealthKit() async {
         try? await healthKit.requestAuthorization()
+        startHealthKitUpdates()
+        await refreshFromHealthKit()
+    }
+
+    private func startHealthKitUpdates() {
         healthKit.enableBackgroundDelivery()
         healthKit.startObserving { [weak self] completionHandler in
             Task { @MainActor [weak self] in
@@ -45,7 +52,21 @@ final class ChallengeStore {
                 completionHandler()
             }
         }
-        await refreshFromHealthKit()
+    }
+
+    /// Warms up HealthKit while the welcome sheet is being read, so the permission prompt
+    /// appears immediately when the user taps through.
+    func prewarmHealthKit() async {
+        guard !skipsHealthKit else { return }
+        await healthKit.prewarm()
+    }
+
+    /// Onboarding entry point: returns once the user has answered the Health prompt.
+    func requestHealthAccess() async {
+        guard !skipsHealthKit else { return }
+        try? await healthKit.requestAuthorization()
+        startHealthKitUpdates()
+        Task { await refreshFromHealthKit() }
     }
 
     func refreshFromHealthKit() async {

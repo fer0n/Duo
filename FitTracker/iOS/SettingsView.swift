@@ -89,7 +89,7 @@ struct SettingsView: View {
                     if notificationsDenied && anyNotificationEnabled {
                         Link(destination: URL(string: UIApplication.openSettingsURLString)!) {
                             Label(
-                                "Notifications are turned off for Fit — enable them in iOS Settings.",
+                                "Notifications are turned off for Duo — enable them in iOS Settings.",
                                 systemImage: Const.Symbol.notificationsOff
                             )
                         }
@@ -127,11 +127,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Link(
-                        "TK-Fit Challenge",
-                        destination: URL(string: "https://www.tk.de/techniker/gesundheit-foerdern/"
-                                            + "digitale-gesundheit/tk-fit/tk-fit-challenge-2077602")!
-                    )
+                    Link("TK-Fit Challenge", destination: Const.tkFitChallengeURL)
                 } footer: {
                     Text("""
                         This app is an unofficial companion to the TK-Fit Challenge, helping you \

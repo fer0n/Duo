@@ -382,7 +382,7 @@
         }
       }
     },
-    "Notifications are turned off for Fit — enable them in iOS Settings." : {
+    "Notifications are turned off for Duo — enable them in iOS Settings." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -604,6 +604,106 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gesamt"
+          }
+        }
+      }
+    },
+    "About the TK-Fit Challenge" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr zur TK-Fit Challenge"
+          }
+        }
+      }
+    },
+    "An unofficial companion for the TK-Fit Challenge — it tracks your progress toward its weekly step and cycling goals." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein inoffizieller Begleiter für die TK-Fit Challenge — er verfolgt deinen Fortschritt bei den wöchentlichen Schritt- und Radzielen."
+          }
+        }
+      }
+    },
+    "Better on your wrist" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch besser am Handgelenk"
+          }
+        }
+      }
+    },
+    "Duo takes whatever is left of your weekly goal and splits it evenly across the days you have left. Steps and cycling count as alternatives, so any mix that adds up to 100% completes the day — and the week." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duo nimmt den Rest deines Wochenziels und verteilt ihn gleichmäßig auf die verbleibenden Tage. Schritte und Radfahren zählen als Alternativen — jede Kombination, die zusammen 100% ergibt, schließt den Tag und damit die Woche ab."
+          }
+        }
+      }
+    },
+    "Grant Access to Health" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf Health erlauben"
+          }
+        }
+      }
+    },
+    "Install Duo on your Apple Watch and add a complication to your watch face to see how much of today's goal is left at a glance." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Installiere Duo auf deiner Apple Watch und füge eine Komplikation zum Zifferblatt hinzu, um auf einen Blick zu sehen, wie viel vom Tagesziel noch fehlt."
+          }
+        }
+      }
+    },
+    "TK-Fit start day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TK-Fit Starttag"
+          }
+        }
+      }
+    },
+    "Welcome to Duo" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei Duo"
+          }
+        }
+      }
+    },
+    "You can change this any time in Settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst das jederzeit in den Einstellungen ändern."
+          }
+        }
+      }
+    },
+    "Your daily target, calculated" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Tagesziel, automatisch berechnet"
           }
         }
       }

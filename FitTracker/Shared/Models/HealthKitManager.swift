@@ -7,14 +7,22 @@ final class HealthKitManager {
 
     private let healthStore = HKHealthStore()
 
+    private let readTypes: Set<HKObjectType> = [
+        HKQuantityType(.stepCount), HKQuantityType(.distanceCycling)
+    ]
+
     static var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
     func requestAuthorization() async throws {
         guard Self.isAvailable else { return }
-        try await healthStore.requestAuthorization(
-            toShare: [],
-            read: [HKQuantityType(.stepCount), HKQuantityType(.distanceCycling)]
-        )
+        try await healthStore.requestAuthorization(toShare: [], read: readTypes)
+    }
+
+    /// The first call into HealthKit pays for the daemon's cold start. Without this that cost
+    /// lands on `requestAuthorization()` and the permission prompt takes seconds to appear.
+    func prewarm() async {
+        guard Self.isAvailable else { return }
+        _ = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: readTypes)
     }
 
     // MARK: - Fetch
